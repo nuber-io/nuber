@@ -1,0 +1,35 @@
+body {
+    /**/
+    background-color: #0069ff;
+    background-color:#0747a6;
+}
+
+.form-header {
+    display: block;
+    height: 100px;
+    padding: 25px;
+    text-align: center !important;
+    color: white;
+}
+
+.vertical-form {
+    margin: 0 auto;
+    width: 450px;
+    padding: 40px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px;
+    box-sizing: border-box;
+    border-radius: 3px;   
+}
+
+.vertical-form p {
+    text-align: center;
+}
+
+.vertical-form .btn {
+    width: 100%;
+}
+.vertical-form-footer {
+    padding-top:20px;
+    text-align:center;
+}

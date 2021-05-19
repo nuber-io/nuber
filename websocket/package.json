@@ -1,0 +1,13 @@
+{
+  "name": "console-server",
+  "description": "Handles accessing the LXD server via websockets",
+  "author": "Jamiel Sharief",
+  "dependencies": {
+    "url": "^0.11.0",
+    "ws": "^7.3.0"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

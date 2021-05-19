@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+/**
+ * OriginPHP Framework
+ * Copyright 2018 - 2019 Jamiel Sharief.
+ *
+ * Licensed under The MIT License
+ * The above copyright notice and this permission notice shall be included in all copies or substantial
+ * portions of the Software.
+ *
+ * @copyright    Copyright (c) Jamiel Sharief
+ * @link         https://www.originphp.com
+ * @license      https://opensource.org/licenses/mit-license.php MIT License
+ */
+
+require dirname(__DIR__) .  '/config/bootstrap.php';
+
+use Origin\Console\ConsoleApplication;
+use App\Console\Command\InstallCommand;
+
+$app = new ConsoleApplication();
+$app->name('install');
+$app->description([
+    'Post install command'
+]);
+$app->addCommand('install', InstallCommand::class);
+exit($app->run());

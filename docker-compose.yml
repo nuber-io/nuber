@@ -1,0 +1,14 @@
+version: "2"
+services:
+  nuber:
+    build: .
+    ports:
+      - "3000:443"
+    volumes:
+      - .:/var/www
+  websocket:
+    build: ./websocket
+    depends_on:
+      - nuber
+    expose:
+      - "8080"

@@ -1,0 +1,38 @@
+# Task Runner Configuration
+# https://github.com/jamielsharief/task-runner
+tasks:
+  test:
+    name: Run PHPUnit
+    description: runs PHPUnit tests
+    commands:
+      - vendor/bin/phpunit
+    output: false
+    environment:
+      XDEBUG_MODE: "off"
+    output: true
+  coverage:
+    name: Generate code coverage
+    description: Generates the code coverage
+    commands:
+      - vendor/bin/phpunit --coverage-html coverage
+    environment:
+      XDEBUG_MODE: "coverage"
+    output: true
+  phpstan:
+    name: Run PHPStan
+    description: Runs PHPStan to find errors in code
+    commands:
+      - vendor/bin/phpstan analyse src
+  release:
+    name: Create release
+    description: Creates a release and updates version.txt
+    commands:
+      - bin/release
+    output: true
+  deploy:
+    name: Deploy scripts and syn docs
+    description: Deploy process
+    commands:
+      - scp scripts/* ${SSH_USER}@nuber.io:/var/www/nuber.io/public
+      - rsync -av docs/ ../docs/source/docs/
+    dotenv: .env.task

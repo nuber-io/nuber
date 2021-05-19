@@ -1,0 +1,167 @@
+hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand i,
+.navbar-brand a {
+  color: #007bff;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+.hidden {
+  display: none;
+}
+.table th,
+.table td {
+  vertical-align: middle;
+}
+.table p {
+  margin: 0px;
+}
+
+.header hr {
+  margin-top: 1rem !important;
+}
+form label {
+  font-weight: bold;
+}
+form .form-check-label {
+  font-weight: normal;
+}
+form .required label:after {
+  color: #ff0000;
+  content: " *";
+}
+
+.error-message {
+  color: #ff0000;
+}
+
+#overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  cursor: pointer;
+}
+
+.card-overlay {
+  position: absolute;
+  width: 500px;
+  z-index: 15;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -250px;
+}
+
+div.form {
+  max-width: 720px;
+}
+
+label.error {
+  display: none;
+}
+
+input.form-control,
+select.form-control,
+textarea.form-control {
+  outline: none;
+  outline-style: none;
+  box-shadow: none;
+  border-radius: 0px;
+}
+
+.form-control:focus {
+  outline: none;
+  outline-style: none;
+  box-shadow: none;
+  background: #fff;
+  outline: none;
+  border-radius: 0px;
+}
+
+.form-control.error,
+.form-control.error:focus {
+  border-color: red;
+  border-width: 2px;
+  outline: none;
+}
+
+/**
+ * Modify Alerts
+ */
+.alert {
+  border-radius: 0px;
+  border: none;
+}
+
+.alert-danger {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.alert-success {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.alert-info {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.alert-warning {
+  background-color: #f1c40f;
+  color: #fff;
+}
+
+div.date input,
+div.time input {
+  width: 150px;
+  margin-right: 5px;
+}
+div.datetime input {
+  width: 300px;
+}
+
+.bg-light {
+  background-color: #fff !important;
+}
+
+.input-fixed .form-control {
+  width: 150px;
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.btn-spinner {
+  display: none;
+  vertical-align: middle;
+  margin-left: 1rem;
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+}
