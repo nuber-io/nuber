@@ -31,7 +31,7 @@ use App\Lxd\Lxd;
     }
 
     .instances .table .th-fixed {
-        min-width: 150px;
+        min-width: 100px;
     }
 
     .instances .table .th-actions {
@@ -76,7 +76,7 @@ function updateDiskUsage(instance,id) {
     <table class="table table-borderless">
         <thead>
             <tr>
-                <th scope="col"><?= __('Name') ?></th>
+                <th scope="col-sm-4"><?= __('Name') ?></th>
                 <th class="th-fixed" scope="col"><?= __('IP address') ?></th>
                 <th class="th-fixed" scope="col"><?= __('Memory') ?></th>
                 <th class="th-fixed" scope="col"><?= __('Disk') ?></th>

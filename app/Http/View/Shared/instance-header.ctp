@@ -77,7 +77,24 @@ $statusMap = [
     <li class="list-inline-item"><strong><?= __('Memory') ?></strong>: <?= $meta['meta']['memory'] ?: __('N/A') ?></li>
     <li class="list-inline-item"><strong><?= __('Disk') ?></strong>: <?= $meta['meta']['storage']?: __('N/A')  ?></li>
     <li class="list-inline-item"><strong><?= __('vCPUs') ?></strong>: <?= $meta['meta']['cpu']? $meta['meta']['cpu']  : __('N/A')  ?> </li>
-    <li class="list-inline-item"><strong><?= __('IP') ?></strong>: <?= $meta['meta']['ipAddress'] ?></li>
+    
+    <?php
+
+     $ipv4 = $ipv6 = [];
+
+     $ips = explode(', ', $meta['meta']['ipAddress']);
+
+     foreach ($ips as $index => $ip) {
+         if (strpos($ip, ':') !== false) {
+             $ipv6[] = $ip;
+         } else {
+             $ipv4[] = $ip;
+         }
+     }
+    ?>
+    
+    <li class="list-inline-item"><strong><?= __('IPv4') ?></strong>: <?= $ipv4 ? implode(', ', $ipv4) : __('none') ?></li>
+    <li class="list-inline-item"><strong><?= __('IPv6') ?></strong>: <?= $ipv6 ? implode(', ', $ipv6) : __('none') ?></li>
 </ul>
 
 <script>

@@ -26,7 +26,7 @@ $id = 'instance-' . uid();
         </div>
     </td>
 
-    <td><?= $instance['meta']['ipAddress'] ?></td>
+    <td><?= str_replace(',', '<br>', $instance['meta']['ipAddress']) ?></td>
     <td>
         <?php $usage = $this->LxdInstance->memoryUsage($instance); ?>
         <div class="progress">

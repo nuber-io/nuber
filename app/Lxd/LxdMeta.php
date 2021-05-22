@@ -84,7 +84,10 @@ class LxdMeta
                 }
              
                 foreach ($settings['addresses'] as $address) {
-                    if ($address['family'] === 'inet' && ! empty($address['address'])) {
+                    if (empty($address['address']) || $address['scope'] !== 'global') {
+                        continue;
+                    }
+                    if (in_array($address['family'], ['inet','inet6'])) {
                         $out[] = $address['address'];
                     }
                 }
