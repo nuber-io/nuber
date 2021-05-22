@@ -20,7 +20,6 @@ Run updater
 
 ```bash
 $ vendor/bin/updater update --all
-root@nuber-app:/var/www# vendor/bin/updater update
      __  __          __      __
     / / / /___  ____/ /___ _/ /____  _____
    / / / / __ \/ __  / __ `/ __/ _ \/ ___/
