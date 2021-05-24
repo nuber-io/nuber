@@ -86,8 +86,16 @@ class InstanceForm extends Record
                 'stopOnFail' => true
             ],
             'between' => [
-                'rule' => ['range', 1,32],
+                'rule' => ['range', 1,32], // TODO: this could be higher
                 'message' => __('Invalid value, 1-32 CPUs')
+            ]
+        ]);
+
+        $this->validate('eth0', [
+            'required',
+            'name' => [
+                'rule' => ['regex', NetworkForm::PATTERN_NAME],
+                'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
             ]
         ]);
     }

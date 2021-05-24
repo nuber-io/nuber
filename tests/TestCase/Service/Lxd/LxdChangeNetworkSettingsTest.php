@@ -7,6 +7,7 @@ use App\Lxd\LxdClient;
 use Origin\TestSuite\OriginTestCase;
 use App\Service\Lxd\LxdChangeNetworkSettings;
 
+// TODO: this needs to be rewritten due to changes
 class LxdChangeNetworkSettingsTest extends OriginTestCase
 {
     private LxdClient $client;
@@ -25,8 +26,10 @@ class LxdChangeNetworkSettingsTest extends OriginTestCase
      * Test with two different IPs to make its being changed. Ideally Device Should be Stopped
      *
      * $ interface=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
-     * $ sudo nmcli con add ifname nuberbr0 type bridge con-name nuberbr0
-     * $ sudo nmcli con add type bridge-slave ifname "$interface" master nuberbr0
+     * $ sudo nmcli con add ifname nuberbr1 type bridge con-name nuberbr1
+     * $ sudo nmcli con add type bridge-slave ifname "$interface" master nuberbr1
+     *
+     * TODO: this needs to be rewritten
      */
     public function testSetBridged()
     {

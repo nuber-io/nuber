@@ -50,26 +50,4 @@ trait LxdTrait
 
         return $response;
     }
-
-    /**
-     * Finds the lxd network bridge device name.
-     *
-     * @internal Some places still have eth0 hard coded, so any changes in the future which allows
-     * users to set the virtualnetwork on eth1 will break. e.g. display ip addresses
-     *
-     * @param array $info Result from Instance::info
-     * @return string|null
-     */
-    protected function findNetworkBridgeDevice(array $info) : ? string
-    {
-        foreach ($info['expanded_devices'] as $name => $config) {
-            if ($config['type'] === 'nic' && isset($config['parent'])) {
-                if (in_array($config['parent'], ['nuberbr0','lxdbr0'])) {
-                    return $name;
-                }
-            }
-        }
-
-        return null;
-    }
 }

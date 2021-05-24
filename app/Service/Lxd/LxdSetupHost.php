@@ -12,7 +12,6 @@
 declare(strict_types = 1);
 namespace App\Service\Lxd;
 
-use RuntimeException;
 use App\Lxd\LxdClient;
 use Origin\Service\Result;
 use App\Service\ApplicationService;
@@ -23,8 +22,12 @@ use Origin\HttpClient\Exception\HttpException;
  *
  * 1. Create the profiles that are used
  * 2. Create a nuberbridge network which share the same subnet so migration can work.
+
+ * @see https://lxd.readthedocs.io/en/latest/networks/
+ * @see https://blog.simos.info/how-to-make-your-lxd-containers-get-ip-addresses-from-your-lan-using-a-bridge/
+ * @see https://stgraber.org/2016/10/27/network-management-with-lxd-2-3/
  *
- * @method Result dispatch(string $host)
+ *  @method Result dispatch(string $host)
  */
 class LxdSetupHost extends ApplicationService
 {
@@ -32,89 +35,16 @@ class LxdSetupHost extends ApplicationService
 
     private LxdClient $client;
 
-    private array $defaultProfile = [
-        'devices' => [
-            'root' => [
-                'path' => '/',
-                'pool' => 'default',
-                'type' => 'disk'
-            ]
-        ]
-    ];
-
-    /**
-     * Setup this way so static IP addresses can be assigned
-     *
-     * $ lxc network attach lxdbr0 c1 eth0 eth0 -- debug
-     * $ lxc config device set c1 eth0 ipv4.address 10.135.210.244 --debug
-     */
-    private array $natProfile = [
-        'description' => 'Nuber NAT Network Profile',
-        'devices' => [
-            'eth0' => [
-                'name' => 'eth0',
-                'nictype' => 'bridged',
-                'parent' => 'nuberbr0',
-                'type' => 'nic'
-            ]
-        ]
-    ];
-
-    /**
-     * This assumes bridge network is configured as `nuberbr1`
-     * @internal virtualbox creates br0 by default but can't be used with this
-     */
-    private array $bridgedProfile = [
-        'description' => 'Nuber Bridged Network Profile',
-        'devices' => [
-            'eth0' => [
-                'name' => 'eth0',
-                'nictype' => 'bridged',
-                'parent' => 'nuberbr1',
-                'type' => 'nic'
-            ]
-        ]
-    ];
-
-    /**
-     * @see https://blog.simos.info/how-to-make-your-lxd-container-get-ip-addresses-from-your-lan/
-     */
-    private array $macvlanProfile = [
-        'description' => 'Nuber Macvlan Profile',
-        'devices' => [
-            'eth0' => [
-                'name' => 'eth0',
-                'nictype' => 'macvlan',
-                'parent' => null,
-                'type' => 'nic'
-            ]
-        ]
-    ];
-
     /**
      * @see https://en.wikipedia.org/wiki/Private_network
      */
     private array $privateNetwork = [
-        'description' => 'Nuber Private Network',
+        'description' => 'Nuber Virtual Network', #! important
         'config' => [
             'ipv4.address' => '10.0.0.1/24',
             'ipv4.nat' => 'true',
             'ipv6.address' => 'fd10:0:0:0::1/64', //  Unique local address (ULA)
             'ipv6.nat' => 'true'
-        ]
-    ];
-
-    /**
-     * @see https://lxd.readthedocs.io/en/latest/networks/
-     * @see https://blog.simos.info/how-to-make-your-lxd-containers-get-ip-addresses-from-your-lan-using-a-bridge/
-     * @see https://stgraber.org/2016/10/27/network-management-with-lxd-2-3/
-     */
-    private array $bridgedNetwork = [
-        'description' => 'Nuber Bridged Network',
-        'config' => [
-            'nictype' => 'bridged',
-            'parent' => 'nuberbr1',
-            'type' => 'nic'
         ]
     ];
 
@@ -130,7 +60,6 @@ class LxdSetupHost extends ApplicationService
 
         try {
             $this->createNetworks();
-            $this->createProfiles();
             $this->configureStorage();
         } catch (HttpException $exception) {
             return new Result(
@@ -193,60 +122,8 @@ class LxdSetupHost extends ApplicationService
     private function createNetworks(): void
     {
         $networks = $this->client->network->list(['recursive' => 0]);
-        if (! in_array('nuberbr0', $networks)) {
-            $this->client->network->create('nuberbr0', $this->privateNetwork);
+        if (! in_array('vnet0', $networks)) {
+            $this->client->network->create('vnet0', $this->privateNetwork);
         }
-    }
-
-    /**
-     * @return void
-     */
-    private function createProfiles(): void
-    {
-        $profiles = $this->client->profile->list(['recursive' => 0]);
-        if (! in_array('nuber-default', $profiles)) {
-            $this->client->profile->create('nuber-default', $this->defaultProfile);
-        }
-
-        if (! in_array('nuber-nat', $profiles)) {
-            $this->client->profile->create('nuber-nat', $this->natProfile);
-        }
-
-        if (! in_array('nuber-bridged', $profiles)) {
-            $this->client->profile->create('nuber-bridged', $this->bridgedProfile);
-        }
-
-        if (! in_array('nuber-macvlan', $profiles)) {
-            $this->client->profile->create('nuber-macvlan', $this->macvlanProfile());
-        }
-    }
-
-    /**
-     * Gets the macvlan profile which needs
-     *
-     * @return array
-     */
-    private function macvlanProfile() : array
-    {
-        $profile = $this->macvlanProfile;
-        $profile['devices']['eth0']['parent'] = $this->getNetworkInterface($this->client->network->list());
-
-        return $profile;
-    }
-
-    /**
-    * Find the first physical network interface
-    *
-    * @param array $networks
-    * @return string
-    */
-    private function getNetworkInterface(array $networks) : string
-    {
-        foreach ($networks as $network) {
-            if ($network['type'] === 'physical') {
-                return $network['name'];
-            }
-        }
-        throw new RuntimeException('No physical network card found');
     }
 }

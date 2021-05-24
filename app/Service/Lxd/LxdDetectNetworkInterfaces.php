@@ -38,8 +38,6 @@ class LxdDetectNetworkInterfaces extends ApplicationService
      */
     protected function execute(string $instance): Result
     {
-        $hashMap = $this->buildHashMap();
-
         $result = [
             'eth0' => null,
             'eth1' => null
@@ -52,41 +50,14 @@ class LxdDetectNetworkInterfaces extends ApplicationService
             if (isset($info['expanded_devices'][$interface])) {
                 $device = $info['expanded_devices'][$interface];
 
-                $hash = md5(json_encode([
-                    'nictype' => $device['nictype'] ?? null,
-                    'parent' => $device['parent'] ?? null,
-                    'type' => $device['type'] ?? null
-                ]));
-
-                $result[$interface] = $hashMap[$hash] ?? null;
+                if ($device['nictype'] === 'bridged') {
+                    $result[$interface] = $device['parent'];
+                } elseif ($device['nictype'] === 'macvlan') {
+                    $result[$interface] = 'nuber-macvlan';
+                }
             }
         }
 
         return new Result(['data' => $result]);
-    }
-
-    /**
-     * Creates a map of hashes based to help with detection
-     *
-     * @return array
-     */
-    private function buildHashMap() : array
-    {
-        $hashMap = [];
-      
-        foreach ($this->client->profile->list() as $profile) {
-            if (in_array($profile['name'], ['nuber-nat','nuber-bridged','nuber-macvlan'])) {
-                $payload = [
-                    'nictype' => $profile['devices']['eth0']['nictype'] ?? null,
-                    'parent' => $profile['devices']['eth0']['parent'] ?? null,
-                    'type' => $profile['devices']['eth0']['type'] ?? null
-                ];
-         
-                $hash = md5(json_encode($payload));
-                $hashMap[$hash] = $profile['name'];
-            }
-        }
-  
-        return $hashMap;
     }
 }

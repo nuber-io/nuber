@@ -32,6 +32,10 @@
             'after' => '<small class="form-text text-muted">'. __('Give your instance a name, remember that you can use alphanumeric characters and dashes, and can have a length between 2-64 characters.') .'</small>',
         ]);
 
+        ?> 
+        <legend  class="w-auto"><?= __('Resources') ?></legend>
+        
+         <?php
         echo $this->Form->control('memory', [
             'div' => 'form-group text input-fixed',
             'label' => __('Memory Limit'),
@@ -43,7 +47,7 @@
             'div' => 'form-group text input-fixed',
             'label' => __('Hard Drive'),
             'after' => '<small class="form-text text-muted">'. __('Set the disk size space for the instance. You can use MB or GB, for example 512MB or 1GB') .'</small>',
-            'default' => '5GB'
+            'default' => '20GB'
         ]);
 
         echo $this->Form->control('cpu', [
@@ -51,6 +55,18 @@
             'label' => __('CPU Limit'),
             'after' => '<small class="form-text text-muted">'. __('Set the maximum amount of CPUs that this instance can use.') .'</small>',
             'default' => 1
+        ]);
+
+        ?> 
+        <legend  class="w-auto"><?= __('Networking') ?></legend>
+        
+         <?php
+
+        echo $this->Form->control('eth0', [
+            'label' => __('eth0'),
+            'options' => $networks,
+            'value' => 'vnet0', // HIT or miss
+     
         ]);
     
         echo $this->Form->hidden('image');

@@ -153,7 +153,7 @@ class LxdStartInstance extends ApplicationService
 
     /**
      * Networking can vary between host, OS etc
-     *
+     * Two networks with the same IP range will cause this to break.
      * @param string $name
      * @return array|null $device
      */

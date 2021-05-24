@@ -17,8 +17,6 @@ use Origin\Text\Text;
 use App\Lxd\LxdClient;
 use Origin\Service\Result;
 use App\Service\ApplicationService;
-use App\Lxd\Endpoint\Host as HostEndpoint;
-use App\Lxd\Endpoint\Instance as InstanceEndpoint;
 
 /**
  * Before migration lets do some checks
@@ -29,11 +27,12 @@ class LxdPreMigrate extends ApplicationService
 {
     use LxdTrait;
 
-    private LxdClient $client;
+    private LxdClient $local;
+    private LxdClient $remote;
     
     protected function initialize(LxdClient $client): void
     {
-        $this->client = $client;
+        $this->local = $client;
     }
 
     /**
@@ -45,9 +44,14 @@ class LxdPreMigrate extends ApplicationService
      */
     protected function execute(string $instance, string $host): Result
     {
+        $this->remote = new LxdClient($host);
+        
         try {
-            $info = (new HostEndpoint(['host' => $host]))->info();
-            $remoteInstances = (new InstanceEndpoint(['host' => $host]))->list(['recursive' => 0]);
+            $info = $this->local->instance->info($instance);
+
+            $remoteHostInfo = $this->remote->host->info();
+            $remoteInstances = $this->remote->instance->list(['recursive' => 0]);
+            $remoteNetworks = $this->remote->network->list(['recursive' => 0]);
         } catch (Exception $exception) {
             return new Result([
                 'error' => [
@@ -70,7 +74,7 @@ class LxdPreMigrate extends ApplicationService
             ]);
         }
 
-        if (! $this->versionCompatability($info)) {
+        if (! $this->versionCompatability($remoteHostInfo)) {
             return new Result([
                 'error' => [
                     'message' => 'Remote server is using an older version of LXD',
@@ -88,9 +92,40 @@ class LxdPreMigrate extends ApplicationService
             ]);
         }
 
+        // Expanded devices always more reliable
+
+        foreach (['eth0','eth1'] as $interface) {
+            $virtualNetwork = $info['expanded_devices'][$interface]['parent'] ?? null;
+
+            if ($virtualNetwork && $info['expanded_devices'][$interface]['nictype'] === 'bridged' && ! $this->hasRemoteNetworkSetup($virtualNetwork, $remoteNetworks)) {
+                return new Result([
+                    'error' => [
+                        'message' => sprintf("Network '%s' is not configured on the remote server", $virtualNetwork),
+                        'code' => 400
+                    ]
+                ]);
+            }
+        }
+       
         return new Result([
             'data' => []
         ]);
+    }
+
+    /**
+     * Check the devices, skip nuberbr0 or macvlan or bridging
+     *
+     * @param string $virtualNetwork
+     * @param array $networks
+     * @return boolean
+     */
+    private function hasRemoteNetworkSetup(string $virtualNetwork, array $networks) : bool
+    {
+        if ($virtualNetwork === 'nuber-macvlan') {
+            return true;
+        }
+
+        return in_array($virtualNetwork, $networks);
     }
 
     /**
@@ -99,7 +134,7 @@ class LxdPreMigrate extends ApplicationService
      */
     private function hasVolumes(string $instance): bool
     {
-        $info = $this->client->instance->info($instance);
+        $info = $this->local->instance->info($instance);
 
         foreach ($info['devices'] ?? [] as $device => $config) {
             if (Text::startsWith('bsv', $device)) {
@@ -116,7 +151,7 @@ class LxdPreMigrate extends ApplicationService
      */
     private function versionCompatability(array $remoteInfo): bool
     {
-        $currentVersion = $this->client->host->info()['environment']['server_version'];
+        $currentVersion = $this->local->host->info()['environment']['server_version'];
         $remoteVersion = $remoteInfo['environment']['server_version'];
 
         return version_compare($this->version($remoteVersion), $this->version($currentVersion)) >= 0;

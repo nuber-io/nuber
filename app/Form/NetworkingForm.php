@@ -16,6 +16,9 @@ use Origin\Model\Record;
 
 class NetworkingForm extends Record
 {
+    const NETWORK_PATTERN = '/^[a-z][a-z0-9-]{1,14}$/i';
+
+    protected $profiles = [];
     /**
      * Setup the schema and validation rules here
      *
@@ -47,17 +50,17 @@ class NetworkingForm extends Record
         // these are actual profiles for networks
         $this->validate('eth0', [
             'required',
-            'in' => [
-                'rule' => ['in',['nuber-nat','nuber-bridged','nuber-macvlan']],
-                'message' => __('Invalid Network')
+            'name' => [
+                'rule' => ['regex',self::NETWORK_PATTERN],
+                'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
             ]
         ]);
 
         $this->validate('eth1', [
             'optional',
-            'in' => [
-                'rule' => ['in',['nuber-bridged','nuber-macvlan']],
-                'message' => __('Invalid Network')
+            'name' => [
+                'rule' => ['regex',self::NETWORK_PATTERN],
+                'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
             ]
         ]);
 

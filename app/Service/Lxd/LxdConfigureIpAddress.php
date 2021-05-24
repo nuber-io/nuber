@@ -18,7 +18,7 @@ use Origin\Service\Result;
 use App\Service\ApplicationService;
 
 /**
- * Configures an instance IP address on the virtual network, and proxies are reconfigured too.
+ * Configures an instance IP address on a virtual network, and proxies are reconfigured too.
  *
  * @method Result dispatch(string $instance, string $ip4 = null, string $ip6 = null))
  */
@@ -33,12 +33,9 @@ class LxdConfigureIpAddress extends ApplicationService
     }
 
     /**
-     * Undocumented function
-     *
-     * @param string $host
      * @param string $instance
-     * @param string $profile  e.g. nuber-bridged or nuber-nat
-     * @param string $ip
+     * @param string $ip4
+     * @param string $ip6
      * @return Result
      */
     protected function execute(string $instance, string $ip4 = null, string $ip6 = null): Result
@@ -46,13 +43,25 @@ class LxdConfigureIpAddress extends ApplicationService
         try {
             $info = $this->client->instance->info($instance);
 
-            // find the interface for network bridge, should be eth0
-            $device = $this->findNetworkBridgeDevice($info);
-            if ($device) {
-                $profileInfo = $this->client->profile->get('nuber-nat');
-                $info['devices'][$device] = $profileInfo['devices'][$device];
-                $info['devices'][$device]['ipv4.address'] = $ip4;
-                $info['devices'][$device]['ipv6.address'] = $ip6;
+            // TODO: this code is being repeated everywhere, migrate into own class
+            $device = $info['expanded_devices']['eth0'] ?? null;
+            $nicType = $info['expanded_devices']['eth0']['nictype'] ?? null;
+            $parent = $info['expanded_devices']['eth0']['parent'] ?? null;
+
+            if (! $device) {
+                return new Result([
+                    'error' => [
+                        'message' => 'eth0 does not exist',
+                        'error' => 500
+                    ]
+                ]);
+            }
+
+            if ($nicType === 'bridged' && $parent !== 'nuber-bridged') {
+                $device['ipv4.address'] = $ip4;
+                $device['ipv6.address'] = $ip6;
+
+                $info['devices']['eth0'] = $device;
             }
 
             $this->client->instance->update($instance, $info);

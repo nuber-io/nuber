@@ -545,6 +545,7 @@ class InstancesController extends ApplicationController
             if ($result->success()) {
                 $this->Flash->success(__('Networking settings have been updated.'));
             } else {
+                $this->Flash->error($result->error('message'));
                 $this->Flash->Error(__('The network settings could not be updated.'));
             }
         } else {
@@ -591,6 +592,8 @@ class InstancesController extends ApplicationController
             'eth1' => $result->data('eth1'),
         ]);
         
+        $networks = $this->getNetworkList();
+
         /**
          * This assumes the first network card is being used, if not it wont work.
          * $ lxc profile device add nuber-macvlan eth0 nic nictype=macvlan parent=wlx28ee52172bcc
@@ -600,16 +603,51 @@ class InstancesController extends ApplicationController
          * $ lxc profile assign c2 nuber-default,nuber-macvlan,nuber-private
          */
 
-        $networks = [
-            'nuber-nat' => __('Virtual Network (NAT)'),
-            'nuber-macvlan' => __('Macvlan Network'),
-        ];
-        // Only display if the bridge was setup during install
-        if (in_array('nuberbr1', $this->lxd->network->list(['recursive' => 0]))) {
+        $this->set(compact('networks', 'ipAddressForm', 'networkingForm', 'hasPorts'));
+    }
+
+    private function getNetworkList() : array
+    {
+        $networks = $this->lxd->network->list();
+   
+        $networks = collection($networks)->filter(function ($network) {
+            return $network['type'] === 'bridge' && $network['description'] === 'Nuber Virtual Network';
+        })->map(function ($network) {
+            $network['description'] = __('Virtual Network') . ': ' . $network['name'];
+
+            return $network;
+        })->combine('name', 'description')->toArray();
+
+        $networks['nuber-macvlan'] = __('Macvlan Network');
+
+        //  Only display if the bridge was setup during install
+        if ($this->bridgedNetworkEnabled()) {
             $networks['nuber-bridged'] = __('Bridged Network');
         }
-   
-        $this->set(compact('networks', 'ipAddressForm', 'networkingForm', 'hasPorts'));
+
+        return $networks;
+    }
+
+    /**
+     * @internal nuberbr1 renamed to nuber-bridged in 0.2.0, so need to add some backwards
+     * compatibility
+
+     * @return boolean
+     */
+    private function bridgedNetworkEnabled() : bool
+    {
+        $enabled = false;
+        $networks = $this->lxd->network->list(['recursive' => 0]);
+        if (in_array('nuber-bridged', $networks)) {
+            $enabled = true;
+        } elseif (in_array('nuberbr1', $networks)) {
+            /**  @deprecated This code needs to be removed in 1.0.0 */
+            $network = $this->lxd->network->get('nuberbr1');
+            $parent = $network['config']['parent'] ?? null;
+            $enabled = $parent === 'nuberbr1';
+        }
+
+        return $enabled;
     }
 
     /**
@@ -716,7 +754,8 @@ class InstancesController extends ApplicationController
             }
         }
 
-        $this->set(compact('instanceForm'));
+        $networks = $this->getNetworkList();
+        $this->set(compact('instanceForm', 'networks'));
     }
 
     /**
@@ -781,7 +820,8 @@ class InstancesController extends ApplicationController
             $instance['fingerprint'], # fingerprint
             $instance['memory'],
             $instance['disk'],
-            $instance['cpu']
+            $instance['cpu'],
+            $instance['eth0'],
         );
 
         if ($result->success()) {
@@ -919,6 +959,12 @@ class InstancesController extends ApplicationController
         }
     }
 
+    /**
+     * @internal failure to start could be a configuration issue, for example if two networks have the same IPv4 address
+     *
+     * @param string $instance
+     * @return void
+     */
     public function start($instance)
     {
         $this->request->header('accept', 'application/json');

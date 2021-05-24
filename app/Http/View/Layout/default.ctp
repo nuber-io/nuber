@@ -67,6 +67,10 @@ use Origin\Core\Config;
             <a class="nav-link" href="/images"><?= __('Images') ?></a>
           </li>
 
+          <li class="nav-item <?= $this->request->params('controller') === 'Networks' ? 'active' : null ?>">
+            <a class="nav-link" href="/networks"><?= __('Networks') ?></a>
+          </li>
+
         </ul>
         <ul class="navbar-nav ml-md-auto">
             <li class="nav-item dropdown">

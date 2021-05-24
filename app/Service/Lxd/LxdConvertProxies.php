@@ -49,11 +49,8 @@ class LxdConvertProxies extends ApplicationService
         try {
             $info = $this->client->instance->info($instance);
 
-            // Find the nuberbr0 lxdbr0, if it does not exists then user is not using virtual network
-            $device = $this->findNetworkBridgeDevice($info);
-        
-            if ($device) {
-                $ipAddress = $info['devices'][$device]['ipv4.address'] ?? null;
+            if (isset($info['devices']['eth0']) && $info['devices']['eth0']['nictype'] === 'bridged') {
+                $ipAddress = $info['devices']['eth0']['ipv4.address'] ?? null;
                 if ($ipAddress) {
                     $info['devices'] = $this->convertToNAT($info['devices'], $this->client->hostName(), $ipAddress);
                 } else {

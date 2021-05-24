@@ -44,7 +44,7 @@ class Network extends Endpoint
                 'recursion' => $options['recursive']
             ]
         ]);
-        
+       
         return $this->removeEndpoints(
             $response,
             '/1.0/networks/'
@@ -61,6 +61,7 @@ class Network extends Endpoint
     {
         $response = $this->sendGetRequest("/networks/{$name}");
         
+        // Dont remove profiles endpoint, because instances can be here too. TODO: how to deal
         return $this->removeEndpoints(
             $response,
             '/1.0/instances/' // used_by
@@ -98,7 +99,7 @@ class Network extends Endpoint
     }
 
     /**
-     * Edits the description or target of anlias
+     * Edits the description or target of alias
      *
      * @param string $name
      * @param array $options

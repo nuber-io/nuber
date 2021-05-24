@@ -15,9 +15,9 @@ Select the `LXD` host that you want to migrate the instance too, then either cli
 
 Moving transfers the instance and its snapshots to the remote host, the local instance and its data will be destroyed after the instance has been copied to the other server. Whilst copy creates a clone of the instance with its snapshots on the remote host but the clone will have a different hardware address.
 
-Things to consider
+Things to consider:
 
-- The LXD versions should be the same, use the LTS or the latest but not both
-- If the static IP address is already used on the destination server, then a different one
-  will be allocated
+- The LXD versions should be the same, use the LTS or the latest but not both. It is better to use the LTS version as this is what we mainly use for testing
+- The the network that the instance is on will need to be configured on the remote host
+- If you have set a static IP address, and this is already being used in another instance on the destination server or the network is using a different IP range, then this will prevent port forwarding from working properly, so you will need reset the static IP address on the destination server.
 - The system time should be synchronized

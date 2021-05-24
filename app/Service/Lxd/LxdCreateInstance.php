@@ -20,10 +20,12 @@ use App\Service\ApplicationService;
  * Creates the instance using a local image and assigns a static IP address. The instance
  * will have two devices, eth0 & root
  *
- * @method Result dispatch(string $name, string $fingerprint, string $memory, string $disk, string $cpu)
+ * @method Result dispatch(string $name, string $fingerprint, string $memory, string $disk, string $cpu, string $eth0)
  */
 class LxdCreateInstance extends ApplicationService
 {
+    use LxdTrait;
+    
     private LxdClient $client;
     
     protected function initialize(LxdClient $client): void
@@ -37,19 +39,24 @@ class LxdCreateInstance extends ApplicationService
      * @param string $fingerprint
      * @param string $memory
      * @param string $disk
-     * @param integer $cpu
+     * @param string $cpu
+     * @param string $eth0
      * @return \Origin\Service\Result|null
      */
-    protected function execute(string $name, string $fingerprint, string $memory, string $disk, string $cpu): ?Result
+    protected function execute(string $name, string $fingerprint, string $memory, string $disk, string $cpu, string $eth0): ?Result
     {
         $uuid = $this->client->instance->create($fingerprint, $name, [
-            'profiles' => [
-                'nuber-default',
-                'nuber-nat'
-            ],
+            'profiles' => [],
             'config' => [
                 'limits.memory' => $memory,
                 'limits.cpu' => (string) $cpu
+            ],
+            'devices' => [
+                'root' => [
+                    'path' => '/',
+                    'pool' => 'default',
+                    'type' => 'disk'
+                ]
             ]
         ]);
 
@@ -57,7 +64,6 @@ class LxdCreateInstance extends ApplicationService
 
         if (! empty($response['err'])) {
             return new Result([
-                'success' => false,
                 'error' => [
                     'message' => $response['err'],
                     'code' => $response['status_code'],
@@ -65,7 +71,12 @@ class LxdCreateInstance extends ApplicationService
             ]);
         }
 
-        // Needs to set after instance created
+        $result = (new LxdChangeNetworkSettings($this->client))->dispatch($name, $eth0);
+
+        if (! $result->success()) {
+            return $result;
+        }
+     
         $this->client->device->set($name, 'root', 'size', $disk);
 
         return (new LxdStartInstance($this->client))->dispatch($name, true);

@@ -77,8 +77,8 @@ read -p "Setup network bridge using '$interface' interface? (y/n) " -n 1 -r
 echo # blank line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    sudo nmcli con add ifname nuberbr1 type bridge con-name nuberbr1
-    sudo nmcli con add type bridge-slave ifname "$interface" master nuberbr1
+    sudo nmcli con add ifname nuber-bridged type bridge con-name nuber-bridged
+    sudo nmcli con add type bridge-slave ifname "$interface" master nuber-bridged
 fi
 
 echo "Starting the Bridge Network (experimental)"
@@ -92,7 +92,7 @@ echo "in your hosts network settings, this will be ignored. "
 echo 
 
 # You need to start the bridge network like this, setting the connection name
-# $ sudo nmcli con down <name of internet connection>; wait ; sudo nmcli con up nuberbr1
+# $ sudo nmcli con down <name of internet connection>; wait ; sudo nmcli con up nuber-bridged
 
 connection=sudo nmcli device | grep "$interface" | awk -- '{printf $1}'
 if [ -z "$connection" ] 
@@ -101,4 +101,4 @@ then
     exit 1
 fi
 
-echo "$ sudo nmcli con down $connection; wait ; sudo nmcli con up nuberbr1"
+echo "$ sudo nmcli con down $connection; wait ; sudo nmcli con up nuber-bridged"

@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace App\Service\Lxd;
 
 use Exception;
+use RuntimeException;
 use App\Lxd\LxdClient;
 use Origin\Service\Result;
 use App\Service\ApplicationService;
@@ -86,35 +87,34 @@ class LxdChangeNetworkSettings extends ApplicationService
         try {
             $info = $this->client->instance->info($instance);
 
-            $ip4Address = $ip6Address = null;
             // Remove second interface if it is there
             if (! empty($info['expanded_devices']['eth1'])) {
                 unset($info['devices']['eth1']);
                 $this->client->device->remove($instance, 'eth1');
             }
+
+            if (isset($info['devices']['eth0'])) {
+                // backup virtual network IP address
+                $ip4Address = $ip6Address = null;
+                if ($info['devices']['eth0']['nictype'] === 'bridged') {
+                    $ip4Address = $info['devices']['eth0']['ipv4.address'] ?? null;
+                    $ip6Address = $info['devices']['eth0']['ipv6.address'] ?? null;
+                }
+
+                // set first interface settings and static address
+                $info['devices']['eth0'] = $this->getDeviceConfig('eth0', $eth0);
+                if ($info['devices']['eth0']['nictype'] === 'bridged') {
+                    $info['devices']['eth0']['ipv4.address'] = $ip4Address;
+                    $info['devices']['eth0']['ipv6.address'] = $ip6Address;
+                }
+            } else {
+                // Create the device
+                $info['devices']['eth0'] = $this->getDeviceConfig('eth0', $eth0);
+            }
                     
-            // reset the profiles
-            $info['profiles'] = ['nuber-default', $eth0];
-           
-            // backup virtual network IP address
-            $parent = $info['devices']['eth0']['parent'] ?? null;
-            if (in_array($parent, ['nuberbr0','lxdbr0']) && $eth0 === 'nuber-nat') {
-                $ip4Address = $info['devices']['eth0']['ipv4.address'] ?? null;
-                $ip6Address = $info['devices']['eth0']['ipv6.address'] ?? null;
-            }
-
-            // set first interface settings and static address
-            $info['devices']['eth0'] = $this->getDeviceConfig($eth0);
-            if ($eth0 === 'nuber-nat') {
-                $info['devices']['eth0']['ipv4.address'] = $ip4Address;
-                $info['devices']['eth0']['ipv6.address'] = $ip6Address;
-            }
-
             // set second interface
             if ($eth1) {
-                $info['profiles'][] = $eth1;
-                $info['devices']['eth1'] = $this->getDeviceConfig($eth1);
-                $info['devices']['eth1']['name'] = 'eth1'; // rename
+                $info['devices']['eth1'] = $this->getDeviceConfig('eth1', $eth1);
             }
         
             $this->client->instance->update($instance, $info);
@@ -131,11 +131,32 @@ class LxdChangeNetworkSettings extends ApplicationService
         ]);
     }
 
-    private function getDeviceConfig(string $profile) : array
+    private function getDeviceConfig(string $interface, string $network) : array
     {
-        $profileInfo = $this->client->profile->get($profile);
+        if ($network === 'nuber-macvlan') {
+            return [
+                'name' => $interface,
+                'nictype' => 'macvlan',
+                'parent' => $this->getNetworkInterface($this->client->network->list()),
+                'type' => 'nic'
+            ];
+        }
 
-        return $profileInfo['devices']['eth0'];
+        if ($network === 'nuber-bridged') {
+            return [
+                'name' => $interface,
+                'nictype' => 'bridged',
+                'parent' => 'nuber-bridged',
+                'type' => 'nic'
+            ];
+        }
+
+        return [
+            'name' => $interface,
+            'nictype' => 'bridged',
+            'parent' => $network,
+            'type' => 'nic'
+        ];
     }
 
     /**
@@ -156,5 +177,15 @@ class LxdChangeNetworkSettings extends ApplicationService
         }
 
         return $devices;
+    }
+
+    private function getNetworkInterface(array $networks) : string
+    {
+        foreach ($networks as $network) {
+            if ($network['type'] === 'physical') {
+                return $network['name'];
+            }
+        }
+        throw new RuntimeException('No physical network card found');
     }
 }

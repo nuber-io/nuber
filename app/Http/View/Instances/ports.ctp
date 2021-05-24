@@ -50,20 +50,21 @@
                 </div>
                 <?php
 
-                    // Whilst this does work if eth0 is nuberbr0, its pretty pointless and will cause problems down the road.
-                    $privateNetworkOnly = isset($meta['expanded_devices']['eth0']['parent']) && in_array($meta['expanded_devices']['eth0']['parent'], ['nuberbr0','lxdbr0']) && ! isset($meta['devices']['eth1']);
+                    $nicType = $meta['expanded_devices']['eth0']['nictype'] ?? null;
+                    $parent = $meta['expanded_devices']['eth0']['parent'] ?? null;
+
+                    $enable = $nicType === 'bridged' && $parent !== 'nuber-bridged';
 
                     echo $this->Form->button(__('Forward Traffic'), [
                         'type' => 'submit',
                         'class' => 'btn btn-primary',
-                        'disabled' => ! $privateNetworkOnly
-                        
+                        'disabled' => ! $enable
                     ]);
 
                     echo $this->renderShared('spinner', ['class' => 'btn-spinner']);
                     echo $this->Form->end();
 
-                    if (! $privateNetworkOnly) {
+                    if (! $enable) {
                         /**
                          * No need for port forwarding if making the instance visible on the host or the internet.
                          * This is being done to prevent problems or issues.
@@ -71,7 +72,7 @@
                         echo $this->Html->tag(
                             'div',
                             '<i class="fas fa-info-circle mr-1"></i>' .
-                            $this->Html->tag('small', __('This is feature is disabled as you are using macvlan or bridged networking.')),
+                            $this->Html->tag('small', __('This is feature is disabled as you are using macvlan or a network bridge.')),
                             ['class' => 'mt-2']
                         );
                     }
