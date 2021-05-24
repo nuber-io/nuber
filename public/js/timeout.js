@@ -1,12 +1,15 @@
+/**
+ * This is redundant if set to the same time as the session timeout reset.
+ */
 let idleTimeout;
-const duration = 4 * 60;
+const duration = 15 * 60 * 1000;
 
 const inactivityListener = function () {
     if (idleTimeout) {
         clearTimeout(idleTimeout);
     }
 
-    idleTimeout = setTimeout(() => location.href = '/logout', duration * 1000);
+    idleTimeout = setTimeout(() => location.href = '/logout', duration);
 };
 
 function enableTimeout() {
