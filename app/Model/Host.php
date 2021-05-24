@@ -77,17 +77,18 @@ class Host extends ApplicationModel
 
     /**
      * Bash command to check if port is open
-     *
      * $ nc -zvw3 192.168.1.120 8443
+     *
      * @param string $address
+     * @param integer $timeout
      * @return boolean
      */
-    public function isPingable($address): bool
+    public function isPingable($address, int $timeout = 10): bool
     {
         $connected = false;
 
         if (is_string($address)) {
-            $socket = @fsockopen($address, 8443, $errno, $errstr, 10);
+            $socket = @fsockopen($address, 8443, $errno, $errstr, $timeout);
             $connected = $socket !== false;
             if ($socket) {
                 fclose($socket);

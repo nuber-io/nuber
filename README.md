@@ -16,7 +16,7 @@ Nuber provides a web based interface with an underlying set of processes for set
 
 You will need a server or a virtual machine with Linux installed, it is recommened that use [Ubuntu server LTS](https://ubuntu.com/download/server), for performance, security and easy of use. If you are setting this up at home on a MAC or a development machine, then you can install Ubuntu inside a virtual machine using [virtualbox](https://www.virtualbox.org/) or [Parallels Desktop](https://www.parallels.com/uk/products/desktop/). Please note that, LXD can't be installed inside a Docker container.
 
-Its recommended to have a separate partition for the LXD storage pool, so do this during install create two partitions, one for the operating system, for example 10GB, and leave the remaining for the storage pool.
+Its recommended to have a separate partition for the LXD storage pool, so do this during install create two partitions, one for the operating system, at least 10GB for `/` and leave the remaining for the storage pool. For production servers you will need to ensure you have enough space for temporary files, such as when migrating containers to different servers.
 
 The recommended storage pool drivers are `ZFS` and `BTRFS`, instructions for setting both can be found below. Check out the [feature comparison](https://linuxcontainers.org/lxd/docs/master/storage#storage-backends-and-supported-functions) to see the difference between the two.
 
@@ -42,7 +42,7 @@ Once the installation is complete, you can go to `https://<ip_address>:3000/inst
 
 ## Uninstall Nuber
 
-To uninstall Nuber, you need to run the following commands insider your server.
+To uninstall Nuber, you need to run the following commands on your server.
 
 ```bash
 $ lxc stop nuber-app

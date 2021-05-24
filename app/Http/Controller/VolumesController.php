@@ -24,7 +24,7 @@ class VolumesController extends ApplicationController
         try {
             $volumes = $this->lxd->volume->list();
         } catch (ConnectionException $exception) {
-            $this->Flash->error(__('Unable to connect to the host'));
+            $this->Flash->error(__('Unable to connect to the host.'));
         }
 
         $this->set(compact('volumes'));
@@ -119,7 +119,7 @@ class VolumesController extends ApplicationController
         if (! empty($info['used_by'])) {
             return $this->renderJson([
                 'error' => [
-                    'message' => __('Volume in use'),
+                    'message' => __('Volume is in use'),
                     'code' => 500
                 ]
             ], 500);

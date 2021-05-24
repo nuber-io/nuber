@@ -11,6 +11,9 @@
  */
 use App\Lxd\Lxd;
 
+/**
+ * @var \App\Http\View\ApplicationView $this
+ */
 ?>
 <style> 
 .spinner-border {
@@ -59,6 +62,7 @@ to one instance at a time, but can also be easily detached.') ?> </p>
                       <div class="spinner-border text-primary " style="width: 2rem; height: 2rem;" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
+                    </td>
                 <td><?= h($volume['config']['size'] ?? '') ?></td>
                 <td class="actions">
                     <div class="dropdown">

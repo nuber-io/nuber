@@ -122,3 +122,7 @@ To enable debug mode, if you reall get stuck then run the command and check the 
 sudo snap set lxd daemon.debug=true; sudo systemctl reload snap.lxd.daemon
 sudo tail -f /var/snap/lxd/common/lxd/logs/lxd.log
 ```
+
+Things to consider
+
+- Testing with micro containers, 5GB is a good strategy.
