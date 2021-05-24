@@ -13,7 +13,7 @@
     "originphp/collection": "^2.0",
     "originphp/commands": "^3.2",
     "originphp/filesystem": "^3.0",
-    "originphp/framework": "^3.24",
+    "originphp/framework": "^3.24.4",
     "originphp/http-client": "^3.1",
     "originphp/log": "^2.0",
     "originphp/storage": "^3.0",
