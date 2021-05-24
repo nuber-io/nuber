@@ -72,13 +72,28 @@ class ApplicationController extends Controller
             'order' => 'name ASC'
         ]));
 
-        $host = $this->Session->exists('Lxd.host') ? $this->Session->read('Lxd.host') : array_key_first(Lxd::hosts());
+        $host = $this->Session->exists('Lxd.host') ? $this->Session->read('Lxd.host') : $this->getDefaultHost();
 
         Lxd::host($host);
         $this->Session->write('Lxd.host', $host);
         $this->lxd = new LxdClient($host);
     }
 
+    /**
+     * Backwards compatability for new feature which uses the is_default from 0.2.0
+     *
+     * @return string
+     */
+    private function getDefaultHost() : string
+    {
+        $default = $this->Host->find('first', [
+            'conditions' => [
+                'is_default' => 1
+            ]
+        ]);
+
+        return $default ? $default->address : array_key_first(Lxd::hosts());
+    }
     /**
      * Logs and renders JSON for errors from LXD API
      *

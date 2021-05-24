@@ -37,6 +37,7 @@
             <tr>          
                 <td><?= h($host->name) ?></td>
                 <td><?= h($host->address) ?></td>
+             
                 <td><?= $this->Date->timeAgoInWords($host->created) ?></td>
                 <td class="actions">
                     <div class="dropdown">
@@ -45,7 +46,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <?php
-                                echo $this->Html->link(__('Rename'), ['action' => 'edit', $host->id], [
+                                echo $this->Html->link(__('Edit'), ['action' => 'edit', $host->id], [
                                     'class' => 'dropdown-item'
                                 ]) ;
                                 echo $this->Form->postLink(__('Delete'), ['action' => 'delete', $host->id], [

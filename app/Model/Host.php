@@ -60,6 +60,8 @@ class Host extends ApplicationModel
         ]);
 
         $this->afterCreate('setupHost');
+        
+        $this->afterUpdate('setDefault');
     }
 
     /**
@@ -133,5 +135,10 @@ class Host extends ApplicationModel
     protected function setupHost(Entity $host, ArrayObject $options): void
     {
         (new LxdSetupHost())->dispatch($host->address);
+    }
+
+    protected function setDefault(Entity $host) : void
+    {
+        $this->updateAll(['is_default' => 0], ['id !=' => $host->id]);
     }
 }

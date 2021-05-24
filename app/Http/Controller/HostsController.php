@@ -80,20 +80,21 @@ class HostsController extends ApplicationController
     public function edit($id = null)
     {
         $host = $this->Host->get($id);
-
+     
         if ($this->request->is(['post', 'put'])) {
             $host = $this->Host->patch($host, $this->request->data(), [
-                'fields' => ['name']
+                'fields' => ['name','is_default']
             ]);
+
             if ($this->Host->save($host)) {
                 $this->Flash->success(__('The host has been updated.'));
 
                 return $this->redirect(['action' => 'index']);
             }
 
-            $this->Flash->error(__('The host could not be saved.'));
+            $this->Flash->error(__('The host settings could not be saved.'));
         }
-        
+
         $this->set(compact('host'));
     }
 

@@ -70,6 +70,9 @@ class InstallController extends ApplicationController
         $host->password = Security::uuid();
         if ($this->request->is(['post'])) {
             $host = $this->Host->new($this->request->data());
+          
+            $host->is_default = true;
+
             if ($this->Host->save($host)) {
 
                 # Adjust the .env file to use the LXD host address
