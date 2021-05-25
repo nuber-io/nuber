@@ -44,18 +44,28 @@ lxc file push container-setup.sh nuber-app/root/install
 lxc exec nuber-app -- chmod +x /root/install 
 lxc exec nuber-app -- /root/install 
 
-# Post config
-lxc config device add nuber-app proxy-3000443 proxy listen=tcp:0.0.0.0:3000 connect=tcp:127.0.0.1:443
-lxc config device add nuber-app proxy-80808080 proxy listen=tcp:0.0.0.0:8080 connect=tcp:127.0.0.1:8080
+# Open Port
+function askPort
+{
+    read -p "Which port should nuber be setup on? [3000]: " port
+    port=${port:-3000}
+    if [[ $port -lt 1024 || $port -gt 49151 ]] ; then
+        echo "Port number must be between 1024 - 49151"
+        echo
+        askPort port;
+    fi
+}
+
+askPort port
+lxc config device add nuber-app proxy-"$port"443 proxy listen=tcp:0.0.0.0:"$port" connect=tcp:127.0.0.1:443
 
 echo
 ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}');
-echo "In your browser open https://$ip:3000/install"
+echo "In your browser open https://$ip:$port/install"
 
-# This only prepares 
-
+echo
 echo 
-read -p "Do you want to setup a network bridge? (y/n) " -n 1 -r
+read -p "Do you want to setup a bridged network? (y/n) [n]" -n 1 -r
 echo # blank line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
@@ -71,9 +81,7 @@ then
     exit 1
 fi
 
-
-
-read -p "Setup network bridge using '$interface' interface? (y/n) " -n 1 -r
+read -p "Setup bridged network using '$interface' interface? (y/n) " -n 1 -r
 echo # blank line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -84,10 +92,10 @@ fi
 echo "Starting the Bridge Network (experimental)"
 echo "=========================================="
 echo 
-echo "You will need to start the bridge network manually, this involves stopping the existing"
+echo "You will need to start the bridged network manually, this involves stopping the existing"
 echo "connection, and then starting the bridge connection."
 echo 
-echo "The bridge network is configured as DHCP, so if you have a static IP address configured"
+echo "The bridged network is configured as DHCP, so if you have a static IP address configured"
 echo "in your hosts network settings, this will be ignored. "
 echo 
 
@@ -97,7 +105,7 @@ echo
 connection=sudo nmcli device | grep "$interface" | awk -- '{printf $1}'
 if [ -z "$connection" ] 
 then 
-    echo  "Error: Unable to get network connection"
+    echo  "Error: Unable to detect network connection interface"
     exit 1
 fi
 

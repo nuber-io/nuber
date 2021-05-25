@@ -117,8 +117,6 @@ then
   apt install php-dev php-xdebug
 fi
 
-echo "Requirements:"
-echo "- Apache SSL port 3000"
-echo "- Websocket server port 8080"
-
+echo 
 echo -e "${GREEN}Installation Complete!"
+echo
