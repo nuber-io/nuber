@@ -11,10 +11,8 @@
 # $ lxc exec nuber-app bash
 # $ bash <(curl -s https://www.nuber.io/container-setup.sh)
 #
-
-VERSION=0.1.0
-
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 WHITE='\033[0;37m'
 
@@ -24,10 +22,16 @@ abort()
   exit 1
 }
 
+okStatus()
+{
+  echo 
+  echo -e "${WHITE}[${GREEN} OK ${WHITE}] $1"
+  echo 
+}
+
 if [ "$EUID" -ne 0 ]; then
   abort "You must this as root or with sudo privledges."
 fi
-
 
 apt-get update -y
 apt-get upgrade -y
@@ -39,6 +43,8 @@ if [ ! -f /usr/local/bin/composer ]; then
     abort 'Unable to download Composer'
 fi
 
+okStatus 'Apache, PHP & NPM installed'
+
 # Create SERVER Certificates
 mkdir /etc/apache2/ssl
 openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout /etc/apache2/ssl/privateKey -out /etc/apache2/ssl/certificate -subj "/CN=localhost"  -extensions EXT -config <( \
@@ -46,6 +52,8 @@ openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout /etc/apache2/ssl/priva
 
 # Enable Modules proxy etc are needed if only using rewrite
 a2enmod rewrite ssl proxy proxy_http proxy_wstunnel expires
+
+okStatus 'Apache modules configured '
 
 export COMPOSER_ALLOW_SUPERUSER=1
 
@@ -55,8 +63,9 @@ then
   rm -rf /var/www
   mkdir /var/www
   cd /var/www
-
+  
   git clone https://github.com/nuber-io/nuber .
+  # Setup composer and app
   composer install --no-dev --no-interaction 
   bin/install
 fi
@@ -64,11 +73,14 @@ fi
 # Switch to WWW
 cd /var/www
 
+VERSION=$(cat "version.txt"); 
+
 # Setup File Perms - create cache directory before cron job does
 chown -R www-data:www-data /var/www
 chmod -R 0775 /var/www
 chmod -R 0776 /var/www/tmp
 
+# Configure the Database for the container
 # Configure the Database
 if [ "$1" != "--docker" ] 
 then
@@ -93,10 +105,17 @@ else
   systemctl restart apache2
 fi
 
+# Install NodeJS dependencies
 if [ "$1" != "--docker" ] 
 then
   cd /var/www/websocket
   npm install
+fi
+
+# Enable PHP Extensions.
+if [ "$1" = "--docker" ] 
+then
+  apt install php-dev php-xdebug
 fi
 
 # Setup CRON
@@ -111,12 +130,4 @@ then
   vendor/bin/updater init --version ${VERSION}
 fi
 
-# Setup PHPUnit
-if [ "$1" = "--docker" ] 
-then
-  apt install php-dev php-xdebug
-fi
-
-echo 
-echo -e "${GREEN}Installation Complete!"
-echo
+okStatus 'Nuber installed';

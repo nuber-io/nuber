@@ -16,6 +16,7 @@ Download dependencies and setup the environment for the installation.
 $ cd nuber
 $ composer install
 $ bin/install
+$ npm install ./websocket
 ```
 
 Create the database and tables, also setup the database for testing.
@@ -23,12 +24,6 @@ Create the database and tables, also setup the database for testing.
 ```bash
 $ bin/console db:setup
 $ bin/console db:test:prepare
-```
-
-Change ownership of the files, this is important since the web application needs to write to the `logs` and `tmp/session folder`. So if you run into an error, this is probably because of write permissions.
-
-```bash
-$ sudo chown -R www-data:www-data .
 ```
 
 Build the container
@@ -122,7 +117,3 @@ To enable debug mode, if you reall get stuck then run the command and check the 
 sudo snap set lxd daemon.debug=true; sudo systemctl reload snap.lxd.daemon
 sudo tail -f /var/snap/lxd/common/lxd/logs/lxd.log
 ```
-
-Things to consider
-
-- Testing with micro containers, 5GB is a good strategy.
