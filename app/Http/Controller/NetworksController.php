@@ -44,7 +44,7 @@ class NetworksController extends ApplicationController
          * solution can be found. The lxdbr0 is used for installation of nuber.
          */
         $networks = collection($networks)->filter(function ($network) {
-            return $network['type'] === 'bridge' && $network['description'] === 'Nuber Virtual Network';
+            return $network['type'] === 'bridge' && $network['description'] === NUBER_VIRTUAL_NETWORK;
         })->toArray();
 
         $this->set(compact('networks'));

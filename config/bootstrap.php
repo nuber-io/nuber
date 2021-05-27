@@ -23,6 +23,8 @@ define('TMP', ROOT . '/tmp');
 define('LOGS', ROOT . '/logs');
 define('CACHE', TMP . '/cache');
 
+define('NUBER_VIRTUAL_NETWORK', 'Nuber virtual network');
+
 require dirname(__DIR__) . '/vendor/originphp/framework/src/Core/bootstrap.php';
 #require __DIR__ . '/autoload.php';
 

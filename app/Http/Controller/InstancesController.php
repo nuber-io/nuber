@@ -611,7 +611,7 @@ class InstancesController extends ApplicationController
         $networks = $this->lxd->network->list();
    
         $networks = collection($networks)->filter(function ($network) {
-            return $network['type'] === 'bridge' && $network['description'] === 'Nuber Virtual Network';
+            return $network['type'] === 'bridge' && $network['description'] === NUBER_VIRTUAL_NETWORK;
         })->map(function ($network) {
             $network['description'] = __('Virtual Network') . ': ' . $network['name'];
 

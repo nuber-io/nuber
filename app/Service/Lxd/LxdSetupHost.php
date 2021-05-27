@@ -39,11 +39,11 @@ class LxdSetupHost extends ApplicationService
      * @see https://en.wikipedia.org/wiki/Private_network
      */
     private array $privateNetwork = [
-        'description' => 'Nuber Virtual Network', #! important
+        'description' => NUBER_VIRTUAL_NETWORK, #! important
         'config' => [
             'ipv4.address' => '10.0.0.1/24',
             'ipv4.nat' => 'true',
-            'ipv6.address' => 'fd10:0:0:0::1/64', //  Unique local address (ULA)
+            'ipv6.address' => 'fd00:0000:0000:0000::1/48', //  Unique local address (ULA)
             'ipv6.nat' => 'true'
         ]
     ];

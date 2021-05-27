@@ -38,14 +38,14 @@ class LxdCreateNetwork extends ApplicationService
      *
      * @param string $name
      * @param string $ipv4 e.g. 10.0.2.1/24
-     * @param string $ipv6 e.g. fd10:0:0:0::2/64
+     * @param string $ipv6 e.g. fd10:0:0:0::2/64 (between fc00:: & fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
      * @return Result
      */
     protected function execute(string $name, string $ipv4 = null, string $ipv6 = null): Result
     {
         try {
             $this->client->network->create($name, [
-                'description' => 'Nuber Virtual Network',
+                'description' => NUBER_VIRTUAL_NETWORK,
                 'config' => [
                     'ipv4.address' => $ipv4 ?? 'none',
                     'ipv4.nat' => 'true',
