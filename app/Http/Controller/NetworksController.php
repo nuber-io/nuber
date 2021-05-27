@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace App\Http\Controller;
 
 use Exception;
+use Origin\Text\Text;
 use App\Form\NetworkForm;
 use App\Service\Lxd\LxdCreateNetwork;
 use Origin\HttpClient\Exception\ConnectionException;
@@ -50,17 +51,49 @@ class NetworksController extends ApplicationController
         $this->set(compact('networks'));
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return array
+     */
+    private function getUsedIpAddresses() : array
+    {
+        $networkInfo = $this->lxd->network->list();
+        $out = [];
+
+        foreach ($networkInfo as $network) {
+            foreach (['ipv4.address','ipv6.address'] as $key) {
+                if (! empty($network['config'][$key]) && $network['config'][$key] !== 'none') {
+                    $out[$key][] = Text::left('/', $network['config'][$key]);
+                }
+            }
+        }
+
+        return [
+            'ipv4' => $out['ipv4.address'] ?? [],
+            'ipv6' => $out['ipv6.address'] ?? [],
+        ];
+    }
+
+    /**
+     * Only provides a simple user entered IP validation, wont check if there is a crossover to prevent
+     * container start issues.
+     *
+     * @return void
+     */
     public function create()
     {
         $networkForm = NetworkForm::new();
 
-        // TODO: setting IP 10.0.0.0 will trigger exception
-
         if ($this->request->is(['post'])) {
             $networkForm = NetworkForm::patch($networkForm, $this->request->data());
             
+            // Setup validation data
             $networkForm->setNetworks($this->lxd->network->list(['recursive' => 0]));
-
+            $ips = $this->getUsedIpAddresses();
+            $networkForm->setIpv4Addresses($ips['ipv4']);
+            $networkForm->setIpv6Addresses($ips['ipv6']);
+    
             if (empty($networkForm->ipv4_address) && empty($networkForm->ipv6_address)) {
                 $this->Flash->error(__('Both IPv4 or IPv6 cannot be empty.'));
             } elseif ($networkForm->validates()) {
@@ -89,11 +122,21 @@ class NetworksController extends ApplicationController
 
         if ($this->request->is(['post'])) {
             $networkForm = NetworkForm::patch($networkForm, $this->request->data());
-           
+     
+            // Set validators
             if ($networkForm->modified('name')) {
                 $networkForm->setNetworks($this->lxd->network->list(['recursive' => 0]));
             }
-            
+            $ips = $this->getUsedIpAddresses();
+
+            if ($networkForm->modified('ipv4_address')) {
+                $networkForm->setIpv4Addresses($ips['ipv4']);
+            }
+
+            if ($networkForm->modified('ipv6_address')) {
+                $networkForm->setIpv6Addresses($ips['ipv6']);
+            }
+
             if (empty($networkForm->ipv4_address) && empty($networkForm->ipv6_address)) {
                 $this->Flash->error(__('Both IPv4 or IPv6 cannot be empty.'));
             } elseif ($networkForm->validates() && $this->updateNetwork($networkForm, $info)) {

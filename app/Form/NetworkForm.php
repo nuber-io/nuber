@@ -43,7 +43,6 @@ class NetworkForm extends Record
 
     protected $ipv4Addresses = [];
     protected $ipv6Addresses = [];
-
     protected $networks = [];
 
     /**
@@ -58,7 +57,17 @@ class NetworkForm extends Record
      */
     protected function initialize(): void
     {
-        $this->validate('name', $this->nameValidationRules());
+        $this->validate('name', [
+            'required',
+            'name' => [
+                'rule' => ['regex',self::PATTERN_NAME],
+                'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
+            ],
+            'notIn' => [
+                'rule' => ['notIn',$this->networks],
+                'message' => __('A network with this name already exists')
+            ]
+        ]);
         
         $this->validate('ipv4_address', [
             'optional',
@@ -68,7 +77,7 @@ class NetworkForm extends Record
             ],
             'notIn' => [
                 'rule' => ['notIn',$this->ipv4Addresses],
-                'message' => __('This address is already in use')
+                'message' => __('This is used by another network')
             ]
         ]);
 
@@ -89,7 +98,7 @@ class NetworkForm extends Record
             // TODO: need is rather basic, and needs something more complicated
             'notIn' => [
                 'rule' => ['notIn',$this->ipv6Addresses],
-                'message' => __('This address is already in use')
+                'message' => __('This is used by another network')
             ]
         ]);
 
@@ -100,21 +109,6 @@ class NetworkForm extends Record
                 'message' => __('Enter a number between 1 and 128')
             ]
         ]);
-    }
-
-    private function nameValidationRules() : array
-    {
-        return [
-            'required',
-            'name' => [
-                'rule' => ['regex',self::PATTERN_NAME],
-                'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
-            ],
-            'notIn' => [
-                'rule' => ['notIn',$this->networks],
-                'message' => __('A network with this name already exists')
-            ]
-        ];
     }
 
     public function fromArray(array $info)
@@ -153,6 +147,18 @@ class NetworkForm extends Record
     public function setNetworks(array $networks) : void
     {
         $this->networks = $networks;
-        $this->validate('name', $this->nameValidationRules());
+        $this->initialize();
+    }
+
+    public function setIpv4Addresses(array $addresses) : void
+    {
+        $this->ipv4Addresses = $addresses;
+        $this->initialize();
+    }
+
+    public function setIpv6Addresses(array $addresses) : void
+    {
+        $this->ipv6Addresses = $addresses;
+        $this->initialize();
     }
 }
