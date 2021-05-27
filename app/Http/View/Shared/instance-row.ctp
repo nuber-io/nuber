@@ -26,7 +26,15 @@ $id = 'instance-' . uid();
         </div>
     </td>
 
-    <td><?= str_replace(',', '<br>', $instance['meta']['ipAddress']) ?></td>
+    <td><?php
+
+        $addresses = explode(',', $instance['meta']['ipAddress']);
+
+        foreach ($addresses as $address) {
+            echo $this->Html->div("<span>{$address}</span>", ['class' => 'selectable']);
+        }
+      
+    ?></td>
     <td>
         <?php $usage = $this->LxdInstance->memoryUsage($instance); ?>
         <div class="progress">

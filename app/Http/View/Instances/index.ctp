@@ -15,7 +15,7 @@ use App\Lxd\Lxd;
 ?>
 <style>
     .progress {
-        width: 100px;
+        min-width: 75px;
     }
 
     .fa-success {
@@ -33,6 +33,15 @@ use App\Lxd\Lxd;
     .instances .table .th-fixed {
         min-width: 100px;
     }
+
+    .instances .table .th-fixed-s {
+        min-width: 50px;
+    }
+
+    .instances .table .th-fixed-l {
+        min-width: 150px;
+    }
+
 
     .instances .table .th-actions {
         width: 150px;
@@ -76,12 +85,12 @@ function updateDiskUsage(instance,id) {
     <table class="table table-borderless">
         <thead>
             <tr>
-                <th scope="col-sm-4"><?= __('Name') ?></th>
+                <th scope="col"><?= __('Name') ?></th>
                 <th class="th-fixed" scope="col"><?= __('IP address') ?></th>
-                <th class="th-fixed" scope="col"><?= __('Memory') ?></th>
-                <th class="th-fixed" scope="col"><?= __('Disk') ?></th>
-                <th class="th-fixed" scope="col"><?= __('Status') ?></th>
-                <th class="th-fixed" scope="col"><?= __('Created') ?></th>
+                <th class="th-fixed-s" scope="col"><?= __('Memory') ?></th>
+                <th class="th-fixed-s" scope="col"><?= __('Disk') ?></th>
+                <th class="th-fixed-s" scope="col"><?= __('Status') ?></th>
+                <th class="th-fixed-l" scope="col"><?= __('Created') ?></th>
                 <th class="th-actions" scope="col">&nbsp;</th>
             </tr>
         </thead>

@@ -25,7 +25,7 @@ When you get to the `guided storage configuration` screen, select `custom storag
 
 ![alt text](/assets/img/ubuntu/custom-storage.png "Custom Storage")
 
-Create the root partition `/`, with at least 10GB, the installation of Ubuntu Server uses around 5GB. For development purposes in a VM this is okay, but on a production server you will want alot more because operations such as migration will write to temporary files, which could be very large depending upon what you are migrating.
+Create the root partition `/`, with at least 25GB. On production servers you should always allow more, because certain processes like migration will need to copy the instances to the remote server, and there needs to be sufficent temporary disk space.
 
 ![alt text](/assets/img/ubuntu/create-root-partition.png "Create root partition")
 
@@ -64,7 +64,7 @@ $ sudo apt install btrfs-progs
 
 ## Setting up LXD
 
-So that you can use `LXD` you need to initialize it, you can accept all the defaults except for when it prompts you `Create a new BTRFS pool?`, when it does select **no** and then enter `/btrfs` or the name that you created the partition.
+So that you can use `LXD` you need to initialize it, you can accept all the defaults except make sure `Name of the storage backend` is `btrfs` and then press return then it will prompt you `Create a new BTRFS pool?`, select **no** and then enter `/btrfs` or the name that you created the partition.
 
 ```bash
 $ sudo lxd init

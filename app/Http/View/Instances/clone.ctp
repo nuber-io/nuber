@@ -26,7 +26,7 @@
     
         echo $this->Form->control('name', [
             'label' => __('Instance Name'),
-            'after' => '<small class="form-text text-muted">'. __('Give your instance a name, remember that you can use alphanumeric characters and dashes, and can have a length between 2-64 characters.') .'</small>',
+            'after' => '<small class="form-text text-muted">'. __('Give your instance a name, remember that you can use lowercase alphanumeric characters and dashes, and can have a length between 2-64 characters.') .'</small>',
             'regex' => '^[a-z][a-z0-9-]{1,61}$',
             'required' => true
         ]);

@@ -25,7 +25,7 @@ When you get to the `guided storage configuration` screen, select `custom storag
 
 ![alt text](/assets/img/ubuntu/custom-storage.png "Custom Storage")
 
-Create the root partition `/`, with at least 10GB, the installation of Ubuntu Server uses around 5GB. For development purposes in a VM this is okay, but on a production server you will want alot more because operations such as migration will write to temporary files, which could be very large depending upon what you are migrating.
+Create the root partition `/`, with at least 25GB. On production servers you should always allow more, because certain processes like migration will need to copy the instances to the remote server, and there needs to be sufficent temporary disk space.
 
 ![alt text](/assets/img/ubuntu/create-root-partition.png "Create root partition")
 

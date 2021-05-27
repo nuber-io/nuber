@@ -20,7 +20,7 @@
                 echo $this->Form->control('name', [
                     'label' => false,
                     'placeholder' => $meta['name'],
-                    'after' => '<small class="form-text text-muted"> ' . __('Alphanumeric characters and dashes only, with a length between 2-62 characters.') .  '</small>',
+                    'after' => '<small class="form-text text-muted"> ' . __('Lowercase alphanumeric characters and dashes only, with a length between 2-62 characters.') .  '</small>',
                     'regex' => '^[a-z][a-z0-9-]{1,61}$',
                     'required' => true,
                     'default' => $snapshot

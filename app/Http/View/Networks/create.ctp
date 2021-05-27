@@ -35,7 +35,7 @@
              
         echo $this->Form->control('name', [
             'label' => __('Network name'),
-            'after' => '<small class="form-text text-muted">'. __('Give the network interface a name, remember that you can use alphanumeric characters and dashes, and can have a length between 2-15 characters.') .'</small>',
+            'after' => '<small class="form-text text-muted">'. __('Give the network interface a name, remember that you can use lowercase alphanumeric characters and dashes, and can have a length between 2-15 characters.') .'</small>',
             'placeholder' => 'e.g. virtual-network',
             'regex' => '^[a-z][a-z0-9-]{1,14}$',
             'required' => true
@@ -68,13 +68,13 @@
         $this->Form->control('ipv6_address', [
             'label' => __('IPv6 address prefix'),
             'div' => 'col-8',
-            'after' => '<small class="form-text text-muted"> ' . __('Set an IPv6 address which will be used for the range. e.g. fd10:0:0:0::2, or leave blank to not use IPv6') .  '</small>',
+            'after' => '<small class="form-text text-muted"> ' . __('Set an IPv6 address which will be used for the range. e.g. fd42:603c:9fbb:199::1, or leave blank to not use IPv6') .  '</small>',
             'regex' => '^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$'
         ]) .
         $this->Form->control('ipv6_size', [
             'label' => __('Prefix size'),
             'div' => 'col-4',
-            'options' => array_combine(range(1, 64), range(1, 64)),
+            'options' => array_combine(range(1, 128), range(1, 128)),
             'default' => 64
         ]),
         ['class' => 'form-group form-row']
