@@ -534,6 +534,8 @@ class InstancesController extends ApplicationController
         $this->request->allowMethod('post');
         $networkingForm = NetworkingForm::new($this->request->data());
 
+        $networkingForm->setNetworks($this->lxd->network->list(['recursive' => 0]));
+        
         if ($networkingForm->validates()) {
             // Change network settings
             $result = (new LxdChangeNetworkSettings($this->lxd))->dispatch(
@@ -548,7 +550,7 @@ class InstancesController extends ApplicationController
                 $this->Flash->Error(__('The network settings could not be updated.'));
             }
         } else {
-            $this->Flash->error(__('Invalid Network Settings'));
+            $this->Flash->error(__('Invalid Network Settings.'));
         }
 
         return $this->redirect(['action' => 'networking',$instance]);

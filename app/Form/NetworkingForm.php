@@ -17,8 +17,8 @@ use Origin\Model\Record;
 class NetworkingForm extends Record
 {
     const NETWORK_PATTERN = '/^[a-z][a-z0-9-]{1,14}$/i';
+    protected $networks = [];
 
-    protected $profiles = [];
     /**
      * Setup the schema and validation rules here
      *
@@ -31,21 +31,6 @@ class NetworkingForm extends Record
      */
     protected function initialize(): void
     {
-        $this->addField('network', [
-            'type' => 'string',
-            'length' => 15
-        ]);
-        
-        $this->addField('ip4_address', [
-            'type' => 'string',
-            'length' => 15
-        ]);
-
-        // future ready
-        $this->addField('ip6_address', [
-            'type' => 'string',
-            'length' => 15
-        ]);
 
         // these are actual profiles for networks
         $this->validate('eth0', [
@@ -53,6 +38,10 @@ class NetworkingForm extends Record
             'name' => [
                 'rule' => ['regex',self::NETWORK_PATTERN],
                 'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
+            ],
+            'exists' => [
+                'rule' => [$this,'networkExists'],
+                'message' => __('Unkown network')
             ]
         ]);
 
@@ -61,23 +50,27 @@ class NetworkingForm extends Record
             'name' => [
                 'rule' => ['regex',self::NETWORK_PATTERN],
                 'message' => __('Letters, numbers, hypens only min 2 max 15 chars')
+            ],
+            'exists' => [
+                'rule' => [$this,'networkExists'],
+                'message' => __('Unkown network')
             ]
         ]);
+    }
 
-        $this->validate('ip4_address', [
-            'optional',
-            'ip' => [
-                'rule' => ['ip', 'ipv4'],
-                'message' => __('Invalid IP Address')
-            ]
-        ]);
+    public function setNetworks(array $networks)
+    {
+        $this->networks = $networks;
+    }
 
-        $this->validate('ip6_address', [
-            'optional',
-            'ip' => [
-                'rule' => ['ip', 'ipv6'],
-                'message' => __('Invalid IP Address')
-            ]
-        ]);
+    /**
+     * Undocumented function
+     *
+     * @param [type] $name
+     * @return boolean
+     */
+    public function networkExists($name) : bool
+    {
+        return $name && (in_array($name, ['nuber-macvlan','nuber-bridged']) || in_array($name, $this->networks));
     }
 }
