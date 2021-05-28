@@ -1,11 +1,11 @@
 ---
-title: Networks
+title: Virtual Networks
 description: Managing virtual networks
 extends: _layouts.documentation
 section: content
 ---
 
-# Networks
+# Virtual Networks
 
 When you install nuber or add a host, it will automatically create `vnet0` which is the default network that is used
 when creating instances.
