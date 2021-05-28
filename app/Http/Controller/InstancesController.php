@@ -18,6 +18,7 @@ use Origin\Log\Log;
 use App\Lxd\LxdMeta;
 use Origin\Text\Text;
 use Origin\Core\Config;
+use App\Form\ResizeForm;
 use App\Form\VolumeForm;
 use Origin\Core\PhpFile;
 use Origin\Http\Response;
@@ -184,13 +185,11 @@ class InstancesController extends ApplicationController
             return $instanceMeta;
         }
 
-        $resizeForm = InstanceForm::new();
+        $resizeForm = ResizeForm::new();
 
         if ($this->request->is('post')) {
-            $resizeForm->name = $instance;
-            $resizeForm = InstanceForm::patch($resizeForm, $this->request->data());
-            $resizeForm->validateConfig();
-
+            $resizeForm = ResizeForm::patch($resizeForm, $this->request->data());
+         
             if ($resizeForm->validates()) {
                 $hardDisk = $instanceMeta['expanded_devices']['root'];
                 $response = $this->lxd->instance->edit($instance, [
@@ -207,7 +206,7 @@ class InstancesController extends ApplicationController
                         ]
                     ]
                 ]);
-        
+
                 if (empty($response['err'])) {
                     $this->Flash->success(__('The instance has been resized.'));
 
