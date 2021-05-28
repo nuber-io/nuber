@@ -1,5 +1,5 @@
 {
-  "url": "https://satis.nuber.io",
+  "url": "https://packagist.org",
   "package": "nuber-io/nuber",
   "scripts": {
     "before": ["bin/console maintenance:start"],
@@ -7,6 +7,7 @@
       "composer update --no-interaction",
       "bin/console db:migrate",
       "bin/console cache:clear",
+      "updates/setup-networking",
       "bin/console maintenance:end"
     ]
   }
