@@ -62,6 +62,12 @@ class InstancesControllerTest extends NuberTestCase
         $this->assertResponseContains('<h2>New Instance</h2>');
     }
 
+    /**
+     * @internal if this tests fails, it could be because image is missing or for some reason there is zombine
+     * instance still there.
+     *
+     * @return void
+     */
     public function testNewInstancePost()
     {
         $this->login();
@@ -81,7 +87,8 @@ class InstancesControllerTest extends NuberTestCase
             'memory' => '1GB',
             'disk' => '5GB', // TODO: increased from 1GB due to issue with BTRFS which is being checked out
             'cpu' => '1',
-            'image' => 'ubuntu/focal/'  . ARCH
+            'image' => 'ubuntu/focal/'  . ARCH,
+            'eth0' => 'vnet0'
         ]);
       
         // if you get different url this means its download the image first.

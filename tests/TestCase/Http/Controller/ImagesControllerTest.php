@@ -23,7 +23,7 @@ class ImagesControllerTest extends NuberTestCase
         $client = Lxd::client();
 
         if (in_array('c1', $client->instance->list(['recursive' => 0]))) {
-            $client->instance->delete('c1');
+            $client->operation->wait($client->instance->delete('c1'));
         }
     }
 
