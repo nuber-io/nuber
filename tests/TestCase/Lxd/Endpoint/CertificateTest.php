@@ -3,7 +3,6 @@ namespace App\Test\TestCase\Lxd\Endpoint;
 
 use App\Lxd\Endpoint\Certificate;
 use App\Lxd\Endpoint\Exception\NotFoundException;
-use App\Test\TestCase\Lxd\Endpoint\EndpointTestCase;
 
 class CertificateTest extends EndpointTestCase
 {
@@ -23,6 +22,9 @@ class CertificateTest extends EndpointTestCase
     }
     
     /**
+     * @internal on development machines this test sometimes fails, if it does, it could be because more than one
+     * cert was set.
+     *
      * @depends testStatusTrusted
      */
     public function testDelete()

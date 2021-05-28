@@ -26,9 +26,10 @@ use Origin\Text\Text;
     <div class="float-right">
         <a href="/networks/create" class="btn btn-primary"><?= __('New Network') ?></a>
     </div>
-    <h2><?= __('Networks') ?>&nbsp;
+    <h2>
+        <?= __('Networks') ?> &nbsp;
         <small class="text-muted"><?= Lxd::hosts()[$this->Session->read('Lxd.host')] ?></small>
-   </h2>
+    </h2>
     <hr>
     </hr>
 </div>

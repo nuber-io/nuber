@@ -92,10 +92,11 @@ class LxdStartInstance extends ApplicationService
         // Now wait for network to boot
         $device = $this->waitForNetworkToStart($name);
   
+        // TODO: this error should be displayed to user
         if (! $device) {
             return new Result([
                 'error' => [
-                    'message' => 'Network not running',
+                    'message' => 'Error starting networking',
                     'code' => 500
                 ]
             ]);
