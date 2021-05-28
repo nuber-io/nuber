@@ -7,7 +7,7 @@
       "composer update --no-interaction",
       "bin/console db:migrate",
       "bin/console cache:clear",
-      "updates/setup-networking",
+      "php updates/setup-networking",
       "bin/console maintenance:end"
     ]
   }
