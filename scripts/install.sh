@@ -65,7 +65,7 @@ echo "In your browser open https://$ip:$port/install"
 
 echo
 echo 
-read -p "Do you want to setup a bridged network? (y/n) [n]" -n 1 -r
+read -p "Do you want to setup a bridged network connection? (y/n) [n]" -n 1 -r
 echo # blank line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
