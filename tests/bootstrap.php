@@ -38,6 +38,19 @@ if ($client->certificate->status() === 'untrusted') {
 
 DEFINE('ARCH', (bool) preg_match('/aarch64/', php_uname()) === true ? 'arm64' : 'amd64');
 
+// Create a fake bridged network interface for testing, this is a bridged connection to fake it.
+if (! in_array('nuber-bridged', $client->network->list(['recursive' => 0]))) {
+    $client->network->create('nuber-bridged', [
+        'description' => NUBER_VIRTUAL_NETWORK,
+        'config' => [
+            'ipv4.address' => '10.254.254.1/24',
+            'ipv4.nat' => 'true',
+            'ipv6.address' => 'none',
+            'ipv6.nat' => 'true'
+        ]
+    ]);
+}
+
 // Prefetch image if it does not exist
 if (! in_array('ubuntu', $client->alias->list(['recursive' => 0]))) {
     fwrite(STDOUT, "> downloading ubuntu image\n");
