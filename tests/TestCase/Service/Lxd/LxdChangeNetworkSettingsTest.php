@@ -15,7 +15,9 @@ class LxdChangeNetworkSettingsTest extends OriginTestCase
     protected function startup()
     {
         $this->client = new LxdClient(Lxd::host());
-        $this->client->instance->stop('ubuntu-test');
+        $this->client->operation->wait(
+            $this->client->instance->stop('ubuntu-test')
+        );
     }
 
     protected function shutdown()
@@ -28,28 +30,25 @@ class LxdChangeNetworkSettingsTest extends OriginTestCase
      * $ interface=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
      * $ sudo nmcli con add ifname nuberbr1 type bridge con-name nuberbr1
      * $ sudo nmcli con add type bridge-slave ifname "$interface" master nuberbr1
-     *
-     * TODO: this needs to be rewritten
+
      */
     public function testSetBridged()
     {
-        $ip = '10.247.51.100';
-        $result = (new LxdChangeNetworkSettings($this->client))->dispatch('ubuntu-test', 'nuber-bridged', $ip);
-        $this->assertTrue($result->success());
-        $this->assertEquals(['nuber-default','nuber-bridged'], $result->data('info')['profiles']);
+        /**
+         * during test we created the network, this is because if the bridged network interface was setup properly
+         * it would show up in network.
+         */
+        $result = (new LxdChangeNetworkSettings($this->client))->dispatch('ubuntu-test', 'nuber-bridged');
 
-        $info = $this->client->instance->info('ubuntu-test');
-        $this->assertEquals($ip, $info['expanded_devices']['eth0']['ipv4.address']);
+        //  Failed to start device "eth0": Failed to attach interface: veth60457db8 to eth0: container is not running: "ubuntu-test"
+        $this->assertTrue($result->success());
     }
 
     public function testSetNat()
     {
-        $ip = '10.247.51.101';
-        $result = (new LxdChangeNetworkSettings($this->client))->dispatch('ubuntu-test', 'nuber-nat', $ip);
-        $this->assertTrue($result->success());
+        // if this fails it will return false
+        $result = (new LxdChangeNetworkSettings($this->client))->dispatch('ubuntu-test', 'vnet0');
 
-        $info = $this->client->instance->info('ubuntu-test');
-        $this->assertEquals($ip, $info['expanded_devices']['eth0']['ipv4.address']);
-        $this->assertEquals(['nuber-default','nuber-nat'], $result->data('info')['profiles']);
+        $this->assertTrue($result->success());
     }
 }

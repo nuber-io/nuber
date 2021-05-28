@@ -10,7 +10,7 @@ class NetworksControllerTest extends NuberTestCase
 
         $this->assertResponseOk();
         $this->assertResponseContains('<h2> Networks &nbsp; <small class="text-muted">demo1.lxd</small> </h2>');
-        $this->assertResponseContains('<td>vnet0</td> <td>5</td> <td>10.0.0.1/24</td> <td>fd00:0000:0000:0000::1/48</td>');
+        $this->assertResponseRegExp('/<td>vnet0<\/td> <td>\d<\/td> <td>10.0.0.1\/24<\/td> <td>fd00:0000:0000:0000::1\/48<\/td>/');
     }
     
     public function testCreate()

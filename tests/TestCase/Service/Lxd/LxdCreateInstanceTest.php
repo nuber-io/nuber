@@ -26,7 +26,7 @@ class LxdCreateInstanceTest extends OriginTestCase
   
         $fingerprint = $this->client->alias->get('ubuntu')['target'];
         
-        $result = (new LxdCreateInstance($this->client))->dispatch('instance-create-test', $fingerprint, '1GB', '1GB', (string) 1);
+        $result = (new LxdCreateInstance($this->client))->dispatch('instance-create-test', $fingerprint, '1GB', '1GB', (string) 1, 'vnet0');
         
         $this->assertTrue($result->success());
         $this->assertTrue(Validation::ip($result->data('ip_address')));

@@ -304,47 +304,40 @@ class InstancesControllerTest extends NuberTestCase
         $this->assertFlashMessage('The IP address settings could not be changed.');
     }
 
-    public function testNetworkingNetworkSettingsPost()
+    public function testNetworkingNetworkSettingsPostInvalid()
     {
         $this->login();
         $this->post('/instances/networkSettings/c7', [
             'eth0' => 'nuber-nat',
             'eth1' => null,
         ]);
+        //
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Invalid Network Settings.');
+    }
 
+    public function testNetworkingNetworkSettingsPostInvalidEth1()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'eth1' => 'dont-exist',
+        ]);
+        //
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Invalid Network Settings.');
+    }
+
+    public function testNetworkingNetworkSettingsPost()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'eth1' => null,
+        ]);
+        //Invalid Network Settings.
         $this->assertRedirect('/instances/networking/c7');
         $this->assertFlashMessage('Networking settings have been updated.');
-    }
-
-    /*
-    public function testNetworkingPost()
-    {
-        $this->login();
-        $this->post('/instances/networking/c7', [
-            'network' => 'nuber-nat',
-            'ip4_address' => '10.0.0.254'
-        ]);
-
-        $this->assertRedirect('/instances/networking/c7');
-        $this->assertFlashMessage('Networking settings have been updated.');
-    }
-
-    public function testNetworkingPostInvalid()
-    {
-        $this->login();
-        $this->post('/instances/networking/c7', [
-            'network' => 'nuber-nat',
-            'ip4_address' => 'a-b-c-d'
-        ]);
-        $this->assertResponseOk();
-        $this->assertResponseContains('The metwork settings could not be updated.');
-    }
-*/
-    public function testTerminal()
-    {
-        $this->login();
-        $this->get('/instances/resize/c7');
-        $this->assertResponseOk();
     }
 
     public function testVolumes()
