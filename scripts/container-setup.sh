@@ -86,6 +86,7 @@ if [ "$1" != "--docker" ]
 then
   source config/.env
   bin/console db:setup
+  bin/console db:migrate
 fi
 
 bin/console cache:clear
