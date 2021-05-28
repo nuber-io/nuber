@@ -14,12 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
-## [0.2.0] - tbc
+## [0.2.0] - 2021-05-28
 
 ### Added
 
 - Added Network module
 - Added default host setting in hosts
+- Added displaying of IPv6 addresses if they are available
 
 ### Changed
 
