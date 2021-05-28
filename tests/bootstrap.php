@@ -15,6 +15,7 @@
 
 use App\Lxd\Lxd;
 use App\Lxd\LxdClient;
+
 use App\Service\Lxd\LxdCreateInstance;
 
 require dirname(__DIR__, 1) . '/config/bootstrap.php';
@@ -27,8 +28,10 @@ Lxd::host(LXD_HOST);
 
 $client = new LxdClient(LXD_HOST);
 
+fwrite(STDOUT, "Nuber pre-test optimization\n");
+
 if ($client->certificate->status() === 'untrusted') {
-    fwrite(STDOUT, "Not trusted... attempting to add certificate\n");
+    fwrite(STDOUT, "> adding certificate\n");
     // lxc config set core.trust_password "xxx"
     $client->certificate->add(env('LXD_PASSWORD'));
 }
@@ -37,7 +40,7 @@ DEFINE('ARCH', (bool) preg_match('/aarch64/', php_uname()) === true ? 'arm64' : 
 
 // Prefetch image if it does not exist
 if (! in_array('ubuntu', $client->alias->list(['recursive' => 0]))) {
-    fwrite(STDOUT, "ubuntu image not found... Downloading\n");
+    fwrite(STDOUT, "> downloading ubuntu image\n");
 
     $uuid = $client->image->fetch('ubuntu/focal/' . ARCH, [
         'alias' => 'ubuntu'
@@ -50,19 +53,41 @@ if (! in_array('ubuntu', $client->alias->list(['recursive' => 0]))) {
     }
 }
 
-$fingerprint = $client->alias->get('ubuntu')['target'];
-
-if (in_array('ubuntu-test', $client->instance->list(['recursive' => 0]))) {
+$cleanup = function () use ($client) {
     $info = $client->instance->info('ubuntu-test');
 
     if ($info['status'] === 'Running') {
+        fwrite(STDOUT, "> stopping test container\n");
         $client->operation->wait(
             $client->instance->stop('ubuntu-test')
         );
     }
+    fwrite(STDOUT, "> destroying test container\n");
     $client->operation->wait(
         $client->instance->delete('ubuntu-test')
     );
+};
+
+  // Clean up last test container if script if CTRL-C was used
+  if (in_array('ubuntu-test', $client->instance->list(['recursive' => 0]))) {
+      $cleanup();
+  }
+
+// Create new container
+fwrite(STDOUT, "> creating test container\n");
+$fingerprint = $client->alias->get('ubuntu')['target'];
+$result = (new LxdCreateInstance($client))->dispatch('ubuntu-test', $fingerprint, '1GB', '5GB', (string) 1, 'vnet0');
+
+if (! $result->success()) {
+    throw new RuntimeException('Error creating test instance');
 }
 
-$result = (new LxdCreateInstance($client))->dispatch('ubuntu-test', $fingerprint, '1GB', '5GB', (string) 1);
+fwrite(STDOUT, "\n");
+
+register_shutdown_function(function () use ($cleanup, $client) {
+    // Clean up last test container
+    if (in_array('ubuntu-test', $client->instance->list(['recursive' => 0]))) {
+        fwrite(STDOUT, "\nNuber post test cleanup\n");
+        $cleanup();
+    }
+});
