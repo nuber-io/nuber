@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+require dirname(__DIR__) . '/config/bootstrap.php';
+
+use Origin\Console\ConsoleApplication;
+use App\Console\Command\Update\SetupNetworkingCommand;
+
+$app = new ConsoleApplication();
+$app->name('database');
+$app->description([
+    'Internal update'
+]);
+$app->addCommand('update', SetupNetworkingCommand::class);
+
+exit($app->run());
