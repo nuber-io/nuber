@@ -1,5 +1,5 @@
 {
-  "url": "https://packagist.org",
+  "url": "https://satis.nuber.io",
   "package": "nuber-io/nuber",
   "scripts": {
     "before": ["bin/console maintenance:start"],
