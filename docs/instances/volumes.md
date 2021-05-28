@@ -1,9 +1,10 @@
 ---
 title: Volumes
-description: How to work with snapshots on a LXD container
+description: How to work with volumes on a LXD container
 extends: _layouts.documentation
 section: content
 ---
+
 # Volumes
 
 Volumes allow you to add extra disk space to your instances, each volume can only be attached to one instance at a time, but you can attach and detach as you need.
