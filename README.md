@@ -2,11 +2,11 @@
 
 > Nube is cloud in Spanish.
 
-Nuber is an open source virtualization management software, it provides a front end to manage your own cloud infrastructure, using [Linux Containers](https://linuxcontainers.org/) virtualization technology. Linux containers is an open source container-based hypervisor, which is created and maintained by [Canonical](https://canonical.com/) the company behind Ubuntu. Linux containers offers almost 15x greater density than KVM whilst allowing criticial applications run at bare metal performance ([source](https://ubuntu.com/blog/lxd-crushes-kvm-in-density-and-speed)).
+Nuber is an open source container management platform it provides a front end to manage your own cloud infrastructure, using [Linux Containers](https://linuxcontainers.org/) virtualization technology. Linux containers is an open source container-based hypervisor, which is created and maintained by [Canonical](https://canonical.com/) the company behind Ubuntu. Linux containers offers almost 15x greater density than KVM whilst allowing criticial applications run at bare metal performance ([source](https://ubuntu.com/blog/lxd-crushes-kvm-in-density-and-speed)).
 
 This software aims to make it easier for software companies and developers to setup and manage their own cloud, whilst achieving high density virtualization, both these goals reduce costs and administration time significantly.
 
-Nuber provides a web based interface with an underlying set of processes for setting up and managing containers making it extremley easy to manage virtualization in a consistent way whilst removing the burden and complexity of trying to do this from the command line.
+Nuber is a web-based software with an underlying set of processes for setting up and managing containers making it extremley easy to manage virtualization in a consistent way whilst removing the burden and complexity of trying to do this from the command line.
 
 ## Installation
 
@@ -31,11 +31,10 @@ Once you have setup your server and `LXD` has been initiailzed you can run the f
 $ bash <(curl -s https://www.nuber.io/install.sh)
 ```
 
-If you installed Ubuntu inside a virtual machine, when installation prompts you to setup
-a network bridge, choose no by hitting `n` button.
+There is an option to create a bridged network connection, if you dont need this or you are installing in a virtual machine, then select `n`.
 
 ```bash
-Do you want to setup a network bridge? (y/n) n
+Do you want to setup a bridged network connection? (y/n) [n]
 ```
 
 Once the installation is complete, you can go to `https://<ip_address>:3000/install` to setup your installation.

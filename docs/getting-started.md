@@ -24,7 +24,7 @@ LXD supports various [storage drivers](https://lxd.readthedocs.io/en/stable-4.0/
 First setup an Ubuntu server using one of the following guides:
 
 - [Setup LXD with BTRFS](/docs/lxd/ubuntu-btrfs)
-- [Setup LXD with ZFS](/docs/lxd/ubuntu-zfs)
+- [Setup LXD with ZFS](/docs/lxd/ubuntu-zfs) (recommended)
 
 Then once `LXD` has been setup and configured, run the following command to install `Nuber`
 
