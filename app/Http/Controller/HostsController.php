@@ -92,7 +92,7 @@ class HostsController extends ApplicationController
                 return $this->redirect(['action' => 'index']);
             }
 
-            $this->Flash->error(__('The host settings could not be saved.'));
+            $this->Flash->error(__('The host could not be saved.'));
         }
 
         $this->set(compact('host'));
