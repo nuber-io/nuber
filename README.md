@@ -16,14 +16,9 @@ Nuber is a web-based software with an underlying set of processes for setting up
 
 You will need a server or a virtual machine with Linux installed, it is recommened that use [Ubuntu server LTS](https://ubuntu.com/download/server), for performance, security and easy of use. If you are setting this up at home on a MAC or a development machine, then you can install Ubuntu inside a virtual machine using [virtualbox](https://www.virtualbox.org/) or [Parallels Desktop](https://www.parallels.com/uk/products/desktop/). Please note that, LXD can't be installed inside a Docker container.
 
-Its recommended to have a separate partition for the LXD storage pool, so do this during install create two partitions, one for the operating system, at least 10GB for `/` and leave the remaining for the storage pool. For production servers you will need to ensure you have enough space for temporary files, such as when migrating containers to different servers.
+Its recommended to have a separate partition for the LXD storage pool, so do this during the install, create two partitions, one for the operating system, at least 15GB for `/` and leave the remaining space for the storage pool partition. Note, for production servers, you will need to ensure that you have enough free space for temporary files, such as when migrating containers to different servers, so 25GB or more is better.
 
-The recommended storage pool drivers are `ZFS` and `BTRFS`, instructions for setting both can be found below. Check out the [feature comparison](https://linuxcontainers.org/lxd/docs/master/storage#storage-backends-and-supported-functions) to see the difference between the two.
-
-- [Server setup using BTRFS storage driver](docs/lxd/ubuntu-btrfs.md)
-- [Server setup using ZFS storage driver](docs/lxd/ubuntu-zfs.md)
-
-### Nuber
+The recommended storage pool driver is `ZFS`, see [server setup using ZFS storage driver](docs/lxd/ubuntu-zfs.md) for more information on how to set this up.
 
 Once you have setup your server and `LXD` has been initiailzed you can run the following command to install Nuber.
 

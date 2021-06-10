@@ -21,12 +21,7 @@ To install `Nuber` you will need a server or virtual machine with [Ubuntu server
 
 LXD supports various [storage drivers](https://lxd.readthedocs.io/en/stable-4.0/storage/#feature-comparison), but the best ones are [ZFS](/docs/lxd/ubuntu-zfs) and [BTRFS](/docs/lxd/ubuntu-btrfs).
 
-First setup an Ubuntu server using one of the following guides:
-
-- [Setup LXD with BTRFS](/docs/lxd/ubuntu-btrfs)
-- [Setup LXD with ZFS](/docs/lxd/ubuntu-zfs) (recommended)
-
-Then once `LXD` has been setup and configured, run the following command to install `Nuber`
+First setup an Ubuntu server using the [setup LXD with ZFS guide](/docs/lxd/ubuntu-zfs). Then once `LXD` has been setup and configured, run the following command to install `Nuber`
 
 ```bash
 $ bash <(curl -s https://www.nuber.io/install.sh)
