@@ -22,7 +22,7 @@
 </div>
 <p><?= __('Hosts are other LXD servers that nuber can manage.') ?> </p>
 <div class="hosts index">
-    <table class="table">
+  
     <table class="table table-borderless">
         <thead>
             <tr>
