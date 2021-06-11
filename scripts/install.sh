@@ -63,6 +63,19 @@ echo
 ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}');
 echo "In your browser open https://$ip:$port/install"
 
+# TODO: move to host-setup.sh
+echo
+echo 
+read -p "Do you want to setup ZFS (y/n) [y]" answer
+answer=${answer:-y}
+echo # blank line
+if [[ $answer =~ ^[Yy]$ ]]
+then
+    sudo apt install -y zfsutils-linux
+    sudo modprobe zfs
+    sudo sh -c "echo 'zfs' >> /etc/modules"
+fi
+
 echo
 echo 
 read -p "Do you want to setup a bridged network connection? (y/n) [n]" -n 1 -r
@@ -81,7 +94,7 @@ then
     exit 1
 fi
 
-read -p "Setup bridged network using '$interface' interface? (y/n) " -n 1 -r
+read -p "Setup bridged network using '$interface' interface? (y/n) [n]" -n 1 -r
 echo # blank line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
