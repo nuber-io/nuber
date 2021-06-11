@@ -50,9 +50,11 @@ class LxdDetectNetworkInterfaces extends ApplicationService
             if (isset($info['expanded_devices'][$interface])) {
                 $device = $info['expanded_devices'][$interface];
 
-                if ($device['nictype'] === 'bridged') {
+                // TODO: fixes a warning add to main repo
+                $type = $device['nictype'] ?? null;
+                if ($type === 'bridged') {
                     $result[$interface] = $device['parent'];
-                } elseif ($device['nictype'] === 'macvlan') {
+                } elseif ($type === 'macvlan') {
                     $result[$interface] = 'nuber-macvlan';
                 }
             }
