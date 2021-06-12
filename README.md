@@ -22,6 +22,8 @@ The recommended storage pool driver is `ZFS`, see [server setup using ZFS storag
 
 Once you have setup your server and `LXD` has been initiailzed you can run the following command to install Nuber.
 
+> Nuber is best installed on a freshly installed system (without existing containers)
+
 ```bash
 $ bash <(curl -s https://www.nuber.io/install.sh)
 ```
