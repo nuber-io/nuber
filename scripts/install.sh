@@ -115,7 +115,7 @@ echo
 # You need to start the bridge network like this, setting the connection name
 # $ sudo nmcli con down <name of internet connection>; wait ; sudo nmcli con up nuber-bridged
 
-connection=sudo nmcli device | grep "$interface" | awk -- '{printf $1}'
+connection=$(sudo nmcli device | grep "$interface" | awk -- '{printf $1}')
 if [ -z "$connection" ] 
 then 
     echo  "Error: Unable to detect network connection interface"
