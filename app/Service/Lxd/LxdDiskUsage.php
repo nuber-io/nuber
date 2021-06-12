@@ -49,7 +49,7 @@ class LxdDiskUsage extends ApplicationService
         $totalBytes = isset($info['devices']['root']['size']) ? Bytes::fromString($info['devices']['root']['size']) : null;
        
         try {
-            $output = $this->client->instance->execCommand($instance, 'du -sh / --block-size=M'); # important -h not bytes
+            $output = $this->client->instance->execCommand($instance, 'du -shm /'); # important -h not bytes
 
             $used = $this->parseOutput($output);
 
@@ -57,7 +57,7 @@ class LxdDiskUsage extends ApplicationService
                 'data' => [
                     'used' => $used,
                     'total' => $totalBytes,
-                    'percent' => $this->calculatePercentage($used, $totalBytes)
+                    'percent' => sprintf('%f', $this->calculatePercentage($used, $totalBytes))
                 ]
             ]);
         } catch (Exception $exception) {
@@ -90,8 +90,8 @@ class LxdDiskUsage extends ApplicationService
         $firstLine = array_shift($lines);
         $firstLine = preg_replace('/\s+/', ' ', $firstLine);
        
-        if (preg_match('/^([\d]+M) \/$/', $firstLine, $matches)) {
-            return (int) Bytes::fromString($matches[1] . 'B');
+        if (preg_match('/^([\d]+) \/$/', $firstLine, $matches)) {
+            return (int) Bytes::fromString($matches[1] . 'MB');
         }
      
         throw new Exception('Error parsing output');
