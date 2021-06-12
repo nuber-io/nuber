@@ -43,16 +43,10 @@ $id = 'instance-' . uid();
        
     </td>
     <td>
+    <?php $usage = $this->LxdInstance->diskUsage($instance); ?>
         <div class="progress progress-disk" data-instance="<?= $instance['name'] ?>">
-            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" role="progressbar" style="width: <?= $usage ?>%" aria-valuenow="<?= $usage ?>" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
-        <?php
-            if ($instance['status'] === 'Running') :
-        ?> 
-        <script> 
-            updateDiskUsage('<?= $instance['name'] ?>','<?= $id ?>');
-        </script>
-        <?php endif ?>
     </td>
 
     <?php
