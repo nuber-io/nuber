@@ -69,16 +69,6 @@ use App\Lxd\Lxd;
 </div>
 <script>
 
-/**
- * This is here as ajax restarting requires reloading and therefore works better instead of data-attributes.
- * IMPORTANT: keep before row rendering for now.
- */
-function updateDiskUsage(instance,id) {
-    $.get( "/instances/disk_usage/" + instance, function( data ) {
-        $('#' + id + ' .progress-disk .progress-bar').width(data.usage);
-    });
-}
-
 </script>
 
 <div class="instances index">
@@ -220,13 +210,6 @@ function updateDiskUsage(instance,id) {
         }
    
         $(document).ready(function() {
-            // Update disk usage for each instance
-          /*  $('.progress-disk[data-instance]').each(function() {
-                var progressBar = $(this).find('.progress-bar');
-                var instance = $(this).attr('data-instance');
-                $.get( "/instances/disk_usage/" + instance, function( data ) {
-                    progressBar.width(data.usage);
-                });
-            });*/
+ 
         });
     </script>
