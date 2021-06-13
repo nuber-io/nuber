@@ -29,7 +29,7 @@ return  [
         'alpine/3.10' => 'Alpine 3.10'
     ],
     'opensuse' => [
-        'opensuse/15.2' => 'OpenSUSE 15.2',
-        'opensuse/15.1' => 'OpenSUSE 15.1'
+        'opensuse/15.3' => 'OpenSUSE 15.3',
+        'opensuse/15.2' => 'OpenSUSE 15.2'
     ]
 ];
