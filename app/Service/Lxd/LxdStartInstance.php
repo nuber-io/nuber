@@ -80,9 +80,17 @@ class LxdStartInstance extends ApplicationService
         // Start the starter
         $response = $this->startInstance($name);
         if ($response['err']) {
+
+            // TODO: Detect more errors, i was not really liking this since if LXD change error message this will break, but need some more info
+            $message = __('Error starting instance');
+
+            if (preg_match('/Cannot assign requested address/', $response['err'])) {
+                $message = __('Error setting MAC address');
+            }
+
             return new Result([
                 'error' => [
-                    'message' => 'Error starting instance',
+                    'message' => $message,
                     'code' => 500,
                     'error' => $response['err']
                 ]

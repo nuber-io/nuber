@@ -82,7 +82,7 @@ class LxdChangeNetworkSettings extends ApplicationService
      * @param string $eth1
      * @return Result
      */
-    protected function execute(string $instance, string $eth0, string $eth1 = null): Result
+    protected function execute(string $instance, string $eth0, string $mac0 = null, string $eth1 = null, string $mac1 = null): Result
     {
         try {
             $info = $this->client->instance->info($instance);
@@ -103,6 +103,12 @@ class LxdChangeNetworkSettings extends ApplicationService
 
                 // set first interface settings and static address
                 $info['devices']['eth0'] = $this->getDeviceConfig('eth0', $eth0);
+
+                unset($info['devices']['eth0']['hwaddr']);
+                if ($mac0) {
+                    $info['devices']['eth0']['hwaddr'] = $mac0;
+                }
+              
                 if ($info['devices']['eth0']['nictype'] === 'bridged') {
                     $info['devices']['eth0']['ipv4.address'] = $ip4Address;
                     $info['devices']['eth0']['ipv6.address'] = $ip6Address;
@@ -111,10 +117,14 @@ class LxdChangeNetworkSettings extends ApplicationService
                 // Create the device
                 $info['devices']['eth0'] = $this->getDeviceConfig('eth0', $eth0);
             }
-                    
+
             // set second interface
             if ($eth1) {
                 $info['devices']['eth1'] = $this->getDeviceConfig('eth1', $eth1);
+                unset($info['devices']['eth1']['hwaddr']);
+                if ($mac1) {
+                    $info['devices']['eth1']['hwaddr'] = $mac1;
+                }
             }
         
             $this->client->instance->update($instance, $info);

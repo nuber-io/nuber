@@ -109,7 +109,6 @@ class InstancesController extends ApplicationController
     public function index()
     {
         $instances = $this->instances();
-
         $this->set('instances', LxdMeta::add($instances));
     }
 
@@ -589,7 +588,9 @@ class InstancesController extends ApplicationController
             $result = (new LxdChangeNetworkSettings($this->lxd))->dispatch(
                 $instance,
                 $networkingForm->eth0,
-                $networkingForm->eth1
+                $networkingForm->mac0,
+                $networkingForm->eth1,
+                $networkingForm->mac1
             );
             if ($result->success()) {
                 $this->Flash->success(__('Networking settings have been updated.'));
@@ -631,14 +632,18 @@ class InstancesController extends ApplicationController
 
         $ipAddressForm->set([
             'ip4_address' => $info['devices']['eth0']['ipv4.address'] ?? null,
-            'ip6_address' => $info['devices']['eth0']['ipv6.address'] ?? null
+          
+            'ip6_address' => $info['devices']['eth0']['ipv6.address'] ?? null,
+          
         ]);
 
         $result = (new LxdDetectNetworkInterfaces($this->lxd))->dispatch($instance);
 
         $networkingForm->set([
             'eth0' => $result->data('eth0'),
+            'mac0' => $result->data('mac0'),
             'eth1' => $result->data('eth1'),
+            'mac1' => $result->data('mac1'),
         ]);
         
         $networks = $this->getNetworkList();

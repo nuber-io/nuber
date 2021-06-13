@@ -40,7 +40,9 @@ class LxdDetectNetworkInterfaces extends ApplicationService
     {
         $result = [
             'eth0' => null,
-            'eth1' => null
+            'mac0' => null,
+            'eth1' => null,
+            'mac1' => null
         ];
 
         // TODO: info would of have been called in the controller as well, create a LxdGetInstanceInfo
@@ -60,6 +62,22 @@ class LxdDetectNetworkInterfaces extends ApplicationService
             }
         }
 
+        $result['mac0'] = $this->detectMacAdddress('eth0', $info);
+        $result['mac1'] = $this->detectMacAdddress('eth1', $info);
+        
         return new Result(['data' => $result]);
+    }
+
+    /**
+     * @param string $interface
+     * @param array $info
+     * @return string|null
+     */
+    private function detectMacAdddress(string $interface, array $info) : ?string
+    {
+        $default = $info['config']["volatile.{$interface}.hwaddr"] ?? null;
+        $static = $info['expanded_devices'][$interface]['hwaddr'] ?? null;
+
+        return $default ?: $static;
     }
 }

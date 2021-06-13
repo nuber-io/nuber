@@ -32,6 +32,13 @@
                      
                         ]);
 
+                        echo $this->Form->control('mac0', [
+                            'label' => __('MAC Address'),
+                            'value' => $networkingForm->mac0,
+                            'regex' => '^[0-9a-f]{1,2}([\.:-])(?:[0-9a-f]{1,2}\1){4}[0-9a-f]{1,2}$',
+                            'after' => '<small class="form-text text-muted"> ' . __('Leave blank to automatically generate a MAC address') .  '</small>'
+                        ]);
+
                         /**
                          * Current design is that virtual network if available is on eth0 only
                          */
@@ -43,6 +50,13 @@
                             'options' => $networks,
                             'value' => $networkingForm->eth1,
                             'empty' => true
+                        ]);
+
+                        echo $this->Form->control('mac1', [
+                            'label' => __('MAC Address'),
+                            'value' => $networkingForm->mac1,
+                            'regex' => '^[0-9a-f]{1,2}([\.:-])(?:[0-9a-f]{1,2}\1){4}[0-9a-f]{1,2}$',
+                            'after' => '<small class="form-text text-muted"> ' . __('Leave blank to automatically generate a MAC address') .  '</small>'
                         ]);
 
                     echo $this->Form->button(__('Update Network Settings'), [
@@ -146,17 +160,28 @@
          $("#eth0").change(function () {
              eth1Toggle($(this).val());
         });
+
+        $("#eth1").change(function () {
+             if($(this).val() === ''){
+                $("#mac1").prop('disabled',true);
+                $("#mac1").parent().hide();
+             }  
+             else{
+                $("#mac1").prop('disabled',false);
+                $("#mac1").parent().show();
+             }
+        });
     });
 
     function eth1Toggle(value){
-    
         if( value === 'nuber-macvlan' || value === 'nuber-bridged'){
             $("#eth1").val('');
             $("#eth1").prop('disabled',true);
+            $("#mac1").prop('disabled',true);
         }
         else{
-          
             $("#eth1").prop('disabled',false);
+            $("#mac1").prop('disabled',false);
         }
     }
 

@@ -117,7 +117,8 @@ $statusMap = [
         }).always(function(){
             hideSpinner();
         }).fail(function(xhr) {
-            alertError('<?= __('Error starting instance') ?>');
+            var response = JSON.parse(xhr.responseText);
+            alertError(response.error.message);
             debugError(xhr);
         });
     }

@@ -45,6 +45,14 @@ class NetworkingForm extends Record
             ]
         ]);
 
+        $this->validate('mac0', [
+            'optional',
+            'mac' => [
+                'rule' => 'macAddress',
+                'messsge' => __('Invalid MAC Address')
+            ]
+        ]);
+
         $this->validate('eth1', [
             'optional',
             'name' => [
@@ -54,6 +62,14 @@ class NetworkingForm extends Record
             'exists' => [
                 'rule' => [$this,'networkExists'],
                 'message' => __('Unkown network')
+            ]
+        ]);
+
+        $this->validate('mac1', [
+            'optional',
+            'mac' => [
+                'rule' => 'macAddress',
+                'messsge' => __('Invalid MAC Address')
             ]
         ]);
     }

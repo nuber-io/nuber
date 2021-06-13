@@ -111,16 +111,19 @@ class InstancesControllerTest extends NuberTestCase
         $this->assertResponseRegExp('/{"data":{"name":"create-test","ip_address":"10.0.0.[\d]+"}}/');
     }
 
+    /**
+     * @depends testNewInstanceCreating
+     */
     public function testCreated()
     {
-        // $this->disableMiddleware();
-        // $this->disableErrorHandler();
         $this->login();
 
         $this->get('/instances');
         $this->assertResponseOk();
         $this->assertResponseContains('<h2> Instances &nbsp; <small class="text-muted">demo1.lxd</small> </h2>');
-        $this->assertResponseContains('<a href="/instances/details/create-test">create-test</a>');
+        $instances = $this->viewVariable('instances');
+
+        $this->assertContains('create-test', collection($instances)->extract('name')->toList());
     }
 
     public function testStart()
@@ -309,7 +312,9 @@ class InstancesControllerTest extends NuberTestCase
         $this->login();
         $this->post('/instances/networkSettings/c7', [
             'eth0' => 'nuber-nat',
+            'mac0' => null,
             'eth1' => null,
+            'mac1' => null
         ]);
         //
         $this->assertRedirect('/instances/networking/c7');
@@ -321,7 +326,9 @@ class InstancesControllerTest extends NuberTestCase
         $this->login();
         $this->post('/instances/networkSettings/c7', [
             'eth0' => 'vnet0',
+            'mac0' => null,
             'eth1' => 'dont-exist',
+            'mac1' => null
         ]);
         //
         $this->assertRedirect('/instances/networking/c7');
@@ -338,6 +345,60 @@ class InstancesControllerTest extends NuberTestCase
         //Invalid Network Settings.
         $this->assertRedirect('/instances/networking/c7');
         $this->assertFlashMessage('Networking settings have been updated.');
+    }
+
+    public function testNetworkingMacAddress0Post()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'mac0' => '00:16:3e:dd:17:16',
+            'eth1' => null,
+        ]);
+        //Invalid Network Settings.
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Networking settings have been updated.');
+    }
+
+    public function testNetworkingMacAddress1Post()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'mac0' => null,
+            'eth1' => 'nuber-macvlan',
+            'mac1' => '00:16:3e:dd:12:12'
+        ]);
+        //Invalid Network Settings.
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Networking settings have been updated.');
+    }
+
+    public function testNetworkingMacAddress0PostInvalidMacAddress()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'mac0' => 'abc',
+            'eth1' => null,
+        ]);
+        //Invalid Network Settings.
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Invalid Network Settings.');
+    }
+
+    public function testNetworkingMacAddress1PostInvalidMacAddress()
+    {
+        $this->login();
+        $this->post('/instances/networkSettings/c7', [
+            'eth0' => 'vnet0',
+            'mac0' => '00:16:3e:dd:17:16',
+            'eth1' => 'nuber-macvlan',
+            'mac1' => 'abcd'
+        ]);
+        //Invalid Network Settings.
+        $this->assertRedirect('/instances/networking/c7');
+        $this->assertFlashMessage('Invalid Network Settings.');
     }
 
     public function testVolumes()
@@ -477,6 +538,9 @@ class InstancesControllerTest extends NuberTestCase
      */
     public function testMigrateCopy()
     {
+        $this->disableErrorHandler();
+        $this->disableMiddleware();
+        
         $this->login();
         $this->post('/instances/migrate/c11', [
             'host' => env('LXD_HOST_2'),
