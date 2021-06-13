@@ -122,8 +122,6 @@ class InstancesController extends ApplicationController
     {
         $this->layout = false;
 
-        $lastActivity = $this->Session->exists('RealLastActivity') ?  $this->Session->read('RealLastActivity') : time();
-
         // Prevent login action from sending user here
         if (! $this->request->isAjax()) {
             return $this->redirect(['action' => 'index']);
@@ -144,12 +142,6 @@ class InstancesController extends ApplicationController
         // Save to disk to be used by
         $result = (new LxdResourceUsage($this->lxd))->dispatch();
 
-        /**
-         * This page is loaded evry 5 seconds, its not real activity, so replace
-         */
-        $this->Session->write('Session.lastActivity', $lastActivity);
-        $this->Session->write('RealLastActivity', $lastActivity);
-    
         $this->set('resources', $result->data());
         $this->set('instances', LxdMeta::add($instances));
     }
