@@ -54,6 +54,10 @@ use App\Lxd\Lxd;
     .spinner-border.display {
         display: inline-block;
     }
+
+    #index-spinner {
+        display:block;
+    }
 </style>
 
 <div class="header">
@@ -67,41 +71,58 @@ use App\Lxd\Lxd;
     <hr>
     </hr>
 </div>
+
+<?php
+
+$isLoadScreen = $this->request->query('download') || $this->request->query('create');
+
+?>  
+
+<!-- This will get blocked -->
+<?php if (! $isLoadScreen) :  ?>
 <script>
+    $(document).ready(function() {
+        var resourceInterval = setInterval(updateIndex, 5000);
+    });
+</script>
+<?php endif ?>
+
+<div id="connection">
+    <div class="d-flex align-items-center">
+            <strong><?= __('Connecting') ?>...</strong>
+            <div id="index-spinner" class="spinner-border text-primary ml-auto" role="status" aria-hidden="true"></div>
+        </div>
+    </div>
+</div>
+
+<div id="instance-list" class="instances index">
+</div>
+<script>
+    function updateIndex() {
+        var geturl = $.get( "/instances/monitor", function(html, status, xhr) {
+
+            // trap logout redirects
+            if(xhr.getResponseHeader("X-Action") === 'login'){
+                location.reload();
+            }
+            $('#connection, #connection #index-spinner').hide();
+            $("#instance-list").html(html);
+        })
+        .fail(function( jqXHR, textStatus, errorThrown ) {
+            console.log('error');
+            if (typeof resourceInterval !== 'undefined') {
+                clearInterval(resourceInterval);
+            }
+            $('#instance-list').empty();
+            $('#connection, #connection #index-spinner').show();
+        });
+    }
+
+    $('#connection, #connection #index-spinner').show();
+    updateIndex();
 
 </script>
 
-<div class="instances index">
-    <table class="table table-borderless">
-        <thead>
-            <tr>
-                <th scope="col"><?= __('Name') ?></th>
-                <th class="th-fixed" scope="col"><?= __('IP address') ?></th>
-                <th class="th-fixed-s" scope="col"><?= __('Memory') ?></th>
-                <th class="th-fixed-s" scope="col"><?= __('Disk') ?></th>
-                <th class="th-fixed-s" scope="col"><?= __('Status') ?></th>
-                <th class="th-fixed-l" scope="col"><?= __('Created') ?></th>
-                <th class="th-actions" scope="col">&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            <?php
-
-            foreach ($instances as $instance) {
-                echo $this->renderShared('instance-row', ['instance' => $instance]);
-            }
-            if (empty($instances)) {
-                ?>
-                <tr>
-                    <td colspan="6"><?= __('No instances') ?> </td>
-                </tr>
-            <?php
-            }
-
-            ?>
-        </tbody>
-    </table>
 
 
     <?php if ($this->request->query('download')) :  ?>
@@ -209,7 +230,7 @@ use App\Lxd\Lxd;
             });
         }
    
-        $(document).ready(function() {
- 
-        });
+       
+
+
     </script>

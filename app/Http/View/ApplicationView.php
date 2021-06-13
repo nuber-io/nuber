@@ -27,5 +27,6 @@ class ApplicationView extends View
     protected function initialize(): void
     {
         $this->loadHelper('LxdInstance');
+        $this->loadHelper('Instance');
     }
 }

@@ -33,21 +33,11 @@ $id = 'instance-' . uid();
         foreach ($addresses as $address) {
             echo $this->Html->div("<span>{$address}</span>", ['class' => 'selectable']);
         }
-      
+        
     ?></td>
-    <td>
-        <?php $usage = $this->LxdInstance->memoryUsage($instance); ?>
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: <?= $usage ?>%" aria-valuenow="<?= $usage ?>" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-       
-    </td>
-    <td>
-    <?php $usage = $this->LxdInstance->diskUsage($instance); ?>
-        <div class="progress progress-disk" data-instance="<?= $instance['name'] ?>">
-            <div class="progress-bar" role="progressbar" style="width: <?= $usage ?>%" aria-valuenow="<?= $usage ?>" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-    </td>
+    <td> <?= $this->Instance->resourceProgress($resources[$instance['name']]['memory'] ?? 0) ?> </td>
+    <td> <?= $this->Instance->resourceProgress($resources[$instance['name']]['cpu'] ?? 0) ?> </td>
+    <td> <?= $this->Instance->resourceProgress($resources[$instance['name']]['disk'] ?? 0) ?> </td>
 
     <?php
         $standardAttributes = 'class="dropdown-item"';
@@ -59,7 +49,7 @@ $id = 'instance-' . uid();
             <span class="sr-only">Loading...</span>
             </div>
     </td>
-    <td><?= $this->Date->timeAgoInWords($this->LxdInstance->convertISOdate($instance['created_at'])) ?></td>
+    
     <td>
         <div class="dropdown">
             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

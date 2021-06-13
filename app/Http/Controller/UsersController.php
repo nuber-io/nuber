@@ -19,6 +19,9 @@ class UsersController extends ApplicationController
 {
     public function login()
     {
+        // set a custom header to identify login screens for ajax stuff
+        $this->response->header('X-Action', 'login');
+
         $this->set('title', __('nuber login'));
         $this->layout = 'form';
         

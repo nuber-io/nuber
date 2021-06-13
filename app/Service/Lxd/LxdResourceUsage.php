@@ -21,7 +21,7 @@ use App\Service\ApplicationService;
 /**
  * Getting the disk usage between storage drivers provides in consistent results
  *
- * @method Result dispatch(string $host)
+ * @method Result dispatch()
  */
 class LxdResourceUsage extends ApplicationService
 {

@@ -36,6 +36,7 @@ use App\Service\Lxd\LxdArchitecture;
 use App\Service\Lxd\LxdCloneInstance;
 
 use App\Service\Lxd\LxdImageDownload;
+use App\Service\Lxd\LxdResourceUsage;
 use App\Service\Lxd\LxdStartInstance;
 use App\Service\Lxd\LxdCreateInstance;
 use App\Service\Lxd\LxdDestroyInstance;
@@ -78,15 +79,29 @@ class InstancesController extends ApplicationController
     {
         $instances = [];
         try {
-            $instances = $this->lxd->instance->list();
-            // remove internal instances
-            $instances = (new Collection($instances))->reject(function ($instance) {
-                return Text::startsWith('nuber-', $instance['name']) || $instance['type'] === 'virtual-machine';
-            })->toArray();
+            $instances = $this->getInstances();
         } catch (ConnectionException $exception) {
             Log::error($exception->getMessage());
+            // index_instances
             $this->Flash->error(__('Could not connect to host.'));
         }
+
+        return $instances;
+    }
+
+    /**
+     * Added this abstraction since during some events we dont want to repeateadly display errors to users
+     * e.g. monitor
+     *
+     * @return array
+     */
+    private function getInstances() : array
+    {
+        $instances = $this->lxd->instance->list();
+        // remove internal instances
+        $instances = (new Collection($instances))->reject(function ($instance) {
+            return Text::startsWith('nuber-', $instance['name']) || $instance['type'] === 'virtual-machine';
+        })->toArray();
 
         return $instances;
     }
@@ -95,6 +110,47 @@ class InstancesController extends ApplicationController
     {
         $instances = $this->instances();
 
+        $this->set('instances', LxdMeta::add($instances));
+    }
+
+    /**
+     * @internal
+     *
+     * @return void
+     */
+    public function monitor()
+    {
+        $this->layout = false;
+
+        $lastActivity = $this->Session->exists('RealLastActivity') ?  $this->Session->read('RealLastActivity') : time();
+
+        // Prevent login action from sending user here
+        if (! $this->request->isAjax()) {
+            return $this->redirect(['action' => 'index']);
+        }
+
+        // Catch here rather than InstancesController::instances as each failure will trigger new flash
+        try {
+            $instances = $this->getInstances();
+        } catch (ConnectionException $exception) {
+            return $this->renderJson([
+                'error' => [
+                    'message' => 'Error connecting',
+                    'code' => 404
+                ]
+            ], 404);
+        }
+
+        // Save to disk to be used by
+        $result = (new LxdResourceUsage($this->lxd))->dispatch();
+
+        /**
+         * This page is loaded evry 5 seconds, its not real activity, so replace
+         */
+        $this->Session->write('Session.lastActivity', $lastActivity);
+        $this->Session->write('RealLastActivity', $lastActivity);
+    
+        $this->set('resources', $result->data());
         $this->set('instances', LxdMeta::add($instances));
     }
 
