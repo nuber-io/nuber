@@ -51,6 +51,17 @@ class Endpoint
 
         $this->hostName = $options['host'];
 
+        // Handle IPv6 address
+        if (filter_var($options['host'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+   
+            /**
+             * Cant test on docker mac
+             * @see https://curl.se/libcurl/c/CURLOPT_IPRESOLVE.html
+             */
+            // $curlConfig[CURLOPT_IPRESOLVE] = CURL_VERSION_IPV6;
+            $options['host'] = "[{$options['host']}]";
+        }
+
         $this->client = new Http([
             'base' => "https://{$options['host']}:8443",
             'curl' => $this->curlConfig,

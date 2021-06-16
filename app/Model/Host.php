@@ -88,7 +88,7 @@ class Host extends ApplicationModel
         $connected = false;
 
         // fsockopen requires ipv6 addresses to be in brackets
-        if (strpos($address, ':') !== false) {
+        if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $address = "[{$address}]";
         }
        
