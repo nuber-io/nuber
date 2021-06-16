@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
+## [0.3.0] - 2021-06-13
+
+### Added
+
+- Added MAC address to networking
+- Added openSUSE 15.3 image to menu
+
+### Fixed
+
+- Fixed openSUSE 15.1 error, removed as this image is no longer available
+- Fixed calculating used disk space on Alpine containers
+- Fixed host validation to wrap IPv6 in square brackets
+
 ## [0.2.0] - 2021-05-28
 
 ### Added
