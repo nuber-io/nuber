@@ -87,6 +87,11 @@ class Host extends ApplicationModel
     {
         $connected = false;
 
+        // fsockopen requires ipv6 addresses to be in brackets
+        if (strpos($address, ':') !== false) {
+            $address = "[{$address}]";
+        }
+       
         if (is_string($address)) {
             $socket = @fsockopen($address, 8443, $errno, $errstr, $timeout);
             $connected = $socket !== false;
