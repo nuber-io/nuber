@@ -31,14 +31,12 @@ class LxdAuthorizeHost extends ApplicationService
             }
 
             return $this->result([
-                'success' => true,
                 'data' => [
                     'status' => $this->Certificate->status()
                 ]
             ]);
         } catch (Exception $exception) {
             return $this->result([
-                'success' => false,
                 'error' => [
                     'message' => $exception->getMessage(),
                     'code' => $exception->getCode()
