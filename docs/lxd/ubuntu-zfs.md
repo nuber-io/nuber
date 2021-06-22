@@ -124,6 +124,8 @@ lxdpool  50G   110K  50G        -         -     0%     0%  1.00x    ONLINE  -
 
 ## Configuring LXD
 
+> The default storage pool should be called `default`, do not change this name
+
 So that you can use `LXD` you need to initialize it, you can accept all the defaults except for when it prompts you `Create a new ZFS pool?`, when it does select **no** and then enter `lxdpool` or the name that you used when creating the `ZFS` pool earlier.
 
 ```bash

@@ -64,6 +64,8 @@ $ sudo apt install btrfs-progs
 
 ## Setting up LXD
 
+> The default storage pool should be called `default`, do not change this name
+
 So that you can use `LXD` you need to initialize it, you can accept all the defaults except make sure `Name of the storage backend` is `btrfs` and then press return then it will prompt you `Create a new BTRFS pool?`, select **no** and then enter `/btrfs` or the name that you created the partition.
 
 ```bash
