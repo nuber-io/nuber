@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Virtual machine management
 - Added warning sign to debug log when request is success but LXD returns an error
 - Added error check during installation of nuber, to make sure updates can be downloaded if not bail
+- Added warning on ports page when assigned IP address is different to that was set
 
 ### Changed
 
