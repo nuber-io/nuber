@@ -14,6 +14,13 @@
 use App\Lxd\Lxd;
 
 ?>
+<style>
+
+.fa-exclamation-triangle 
+{
+  color:red;
+}
+</style>
 <div class="header">
     <div class="float-right">
         <a href="/debug/download" class="btn btn-primary"><?= __('Download Log') ?></a>
@@ -37,16 +44,18 @@ use App\Lxd\Lxd;
     // TODO: implement
     $warning = null;
     if (is_array($line['responseBody']) && ! empty($line['responseBody']['metadata']['err'])) {
-        $warning = '&nbsp;<i class="fas fa-exclamation-triangle"></i>';
+        $warning = '<span>&nbsp;<i class="fas fa-exclamation-triangle"></i></span>';
     }
-
-    $badgeResponse = '<span class="badge badge-warning">' .__('response') . '</span>';
+    
+    $badgeResponse = '<span class="badge badge-warning">' .__('response') .   '</span>';
     $hostClass = count(Lxd::hosts()) > 1 ? 'normal' : 'hidden';
   ?>
 
     <div class="col-sm">
       <span class="pr-2"><?= $line['date'] ?></span>
       <span class="badge badge-<?= $line['level'] === 'ERROR' ? 'danger' : 'success' ?>"><?= $line['level'] ?></span>
+
+      
       <span class="pl-2 <?= $hostClass ?>"><?= $line['host'] ?></span>
       <span class="pl-2 message" title=""><?= str_replace('/1.0', '', $line['message']) ?></span>
         <?php
@@ -54,12 +63,13 @@ use App\Lxd\Lxd;
               echo $this->Html->link($badge, '#', ['onclick' => "showData({$index})"]);
           }
         ?>
-    
+          <?= $warning ?>
     </div>
-
+   
     <div class="col-sm-1">
       <?= $this->Html->link($badgeResponse, '#', ['onclick' => "showResponse({$index})"]) ?>
     </div>
+   
   </div>
 
   <div class="row collapsible post-data-<?= $index ?> hidden">
