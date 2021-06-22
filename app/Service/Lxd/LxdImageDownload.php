@@ -30,25 +30,28 @@ class LxdImageDownload extends ApplicationService
      * This is for downloading an image and adding to local
      * store.
      *
-     * @param string $image alpine/3.10/amd64
+     * @param string $image 6b4ffc853d10
 
      * @return Result|null
      */
-    protected function execute(string $image): ?Result
+    protected function execute(string $image, string $alias = null): ?Result
     {
+
+        // Config::read('App.imageDownloadTimeout') //
+
         $response = $this->client->operation->wait(
-            $this->client->image->fetch($image, ['alias' => $image])
+            $this->client->image->fetch($image, [
+                'alias' => $alias
+            ])
         );
       
         if ($response['status_code'] === 200) {
             return $this->result([
-                'success' => true,
                 'data' => $response['metadata']
             ]);
         }
         
         return $this->result([
-            'success' => false,
             'error' => [
                 'message' => $response['err'],
                 'code' => $response['status_code']

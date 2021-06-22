@@ -14,11 +14,10 @@ namespace App\Http\Controller;
 
 use Origin\Text\Text;
 use App\Form\ImageForm;
-use Origin\Cache\Cache;
 use Origin\Collection\Collection;
-use App\Service\Lxd\LxdRemoteImageList;
 use App\Lxd\Endpoint\Image as ImageEndpoint;
 use Origin\Http\Exception\BadRequestException;
+use App\Lxd\Endpoint\Exception\NotFoundException;
 use App\Lxd\Endpoint\Operation as OperationEndpoint;
 use Origin\HttpClient\Exception\ConnectionException;
 
@@ -52,11 +51,15 @@ class ImagesController extends ApplicationController
             return Text::startsWith('nuber-', $instance);
         })->toArray();
 
+        //image.os
+        
         $imageForm = ImageForm::new();
 
         if ($this->request->is(['post'])) {
             $imageForm = ImageForm::patch($imageForm, $this->request->data());
-            
+
+            $info = $this->lxd->instance->info($imageForm->instance);
+
             //$cloneForm->addExisting($this->lxd->instance->list(['recursive' => 0]));
 
             if (! in_array($imageForm->instance, $instances)) {
@@ -68,6 +71,14 @@ class ImagesController extends ApplicationController
                 $response = $this->lxd->operation->wait(
                     $this->lxd->instance->publish($imageForm->instance, [
                         'alias' => $imageForm->name,
+                        // standardize os and add missing properties caused by setting os
+                        'properties' => [
+                            'os' => $info['config']['image.os'],
+                            'architecture' => $info['config']['image.architecture'],
+                            'release' => $info['config']['image.release'],
+                            'type' => $info['config']['image.type'],
+                            'variant' => $info['config']['image.variant'],
+                        ]
                     ])
                 );
               
@@ -96,22 +107,34 @@ class ImagesController extends ApplicationController
     public function download()
     {
         if ($this->request->is(['post'])) {
-            $this->lxd->image->fetch($this->request->data('image'), [
-                'alias' => $this->request->data('image')
-            ]);
+            $this->lxd->image->fetch($this->request->data('fingerprint'));
 
             return $this->redirect(['action' => 'index']);
         }
 
-        if (! Cache::exists('remoteImages')) {
-            $result = (new LxdRemoteImageList())->dispatch();
-            $images = $result->success() ? $result->data() : [];
-            Cache::write('remoteImages', $images, [
-                'duration' => '1 day'
-            ]);
+        if (! file_exists(config_path('images.json'))) {
+            throw new NotFoundException('Images.json not found');
         }
 
-        $this->set('remoteImages', $images ?? Cache::read('remoteImages'));
+        $images = json_decode(file_get_contents(config_path('images.json')), true);
+
+        $remoteImages = [];
+
+        foreach ($images as $image) {
+            $remoteImages[] = [
+                'label' => $image['alias'] . ' ' . __('(Container)'),
+                'value' => $image['containerFingerprint']
+            ];
+          
+            if (! empty($image['virtualMachineFingerprint'])) {
+                $remoteImages[] = [
+                    'label' => $image['alias']  . ' '. __('(Virtual Machine)'),
+                    'value' => $image['virtualMachineFingerprint']
+                ];
+            }
+        }
+      
+        $this->set(compact('remoteImages'));
     }
 
     public function progress($uuid)

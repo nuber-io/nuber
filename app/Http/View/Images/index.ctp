@@ -35,9 +35,13 @@ use App\Lxd\Lxd;
     <table class="table table-borderless">
         <thead>
             <tr>
-                <th scope="col"><?= __('Alias') ?></th>
-                <th scope="col"><?= __('Fingerprint') ?></th>
+
+                <th scope="col"><?= __('Name') ?></th>
+                <th scope="col"><?= __('OS') ?></th>
+                <th scope="col"><?= __('Version') ?></th>
+                <th scope="col"><?= __('Type') ?></th>
                 <th scope="col"><?= __('Size') ?></th>
+                <th scope="col" ><?= __('Fingerprint') ?></th>
                 <th scope="col"><?= __('Created') ?></th>
                 <th scope="col"><?= __('Action') ?></th>
             </tr>
@@ -46,16 +50,17 @@ use App\Lxd\Lxd;
             <?php foreach ($images as $image) : ?>
                 <?php $id = 'image-' . uid(); ?>
                 <tr id="<?= $id ?>">
-                
-                    <th><?= $image['aliases'][0]['name'] ?? null ?></th>
+                    <td><?= $image['aliases'][0]['name'] ?? $image['properties']['description'] ?></th>
+                    <td><?= $image['properties']['os'] ?></td>
+                    <td><?= $image['properties']['release']  ?></td>
+                    <td><?= $image['properties']['type'] === 'squashfs' ? __('Container') : ('Virtual machine')  ?></td>
+                    <td><?= $this->Number->readableSize($image['size']) ?></td>
                     <td class="fingerprint">
                         <span> <?= substr($image['fingerprint'], 0, 12) ?></span>
                         <div class="spinner-border text-primary " style="width: 2rem; height: 2rem;" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </td>
-
-                    <td><?= $this->Number->readableSize($image['size']) ?></td>
                     <td><?= $this->Date->timeAgoInWords($this->LxdInstance->convertISOdate($image['created_at'])) ?></td>
                     <td>
 
@@ -73,8 +78,8 @@ use App\Lxd\Lxd;
                 </tr>
             <?php endforeach ?>
             
-            <?php if (empty($images)) { ?>
-                <tr><td colspan="5"><?= __('No Images') ?></td></tr>
+            <?php if (empty($images) && empty($runningOperations)) { ?>
+                <tr><td colspan="8"><?= __('No Images') ?></td></tr>
             <?php }
 
             foreach ($runningOperations as $task) {
@@ -93,7 +98,7 @@ use App\Lxd\Lxd;
     <h5 class="card-title"><?= __('Create your own Image')?></h5>
     <p class="card-text"><?= __('You can create an image from one of your existing instances, this is ideal where you have setup and installed applications or services, then
     in future you can just create a new instance that is already configured.') ?></p>
-    <a href="/images/create" class="btn btn-primary"><?= __('Create') ?></a>
+    <a href="/images/create" class="btn btn-primary"><?= __('Create Image') ?></a>
   </div>
 </div>
 

@@ -30,7 +30,7 @@ $id = 'progress-' . uid();
     <td colspan="1">
         <?= $message ?>
     </td>
-    <td colspan="4">
+    <td colspan="7">
         <div class="progress">
             <div id='<?= $id ?>' class="progress-bar<?= $class ?>" role="progressbar" style="width: <?= $percent ?>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
         </div>

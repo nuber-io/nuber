@@ -16,12 +16,8 @@
     }
 </style>
 <div class="header">
-    <div class="float-right">
-        <a href="/images" class="btn btn-secondary"><?= __('Back') ?></a>
-    </div>
     <h2><?= __('Download Image') ?></h2>
-    <hr>
-    </hr>
+    <hr></hr>
 </div>
 <p><?= __('Here you can download images from the linuxcontainers.org image server to use locally.') ?></p>
 
@@ -35,7 +31,10 @@
             'after' => '<small class="form-text text-muted">' . __('You can search the available remote images here.') . '</small>'
         ]);
 
-        echo $this->Form->button(__('Download'), ['type' => 'submit', 'class' => 'btn btn-primary']);
+        echo $this->Form->hidden('fingerprint', ['id' => 'fingerprint']);
+
+        echo $this->Form->button(__('Download'), ['type' => 'submit', 'class' => 'btn btn-primary mr-2']);
+        echo $this->Html->link(__('Cancel'), '/images', ['class' => 'btn btn-secondary']);
         echo $this->Form->end();
     ?>
 </div>
@@ -49,12 +48,24 @@
          */
         $("#image").autocomplete({
             source: images,
-            change: function(event, ui) {
+           /* change: function(event, ui) {
                 if (ui.item == null) {
                     event.currentTarget.value = '';
                     event.currentTarget.focus();
                 }
-            }
+            }*/
+            focus: function( event, ui ) {
+                $( "#image" ).val( ui.item.label );
+                return false;
+            },
+            select: function( event, ui ) {
+                $( "#image" ).val( ui.item.label );
+                $( "#fingerprint" ).val( ui.item.value );
+                
+    
+              return false;
+             }
+
         });
         $("form").submit(function(event) {
             if ($("#image").val() === "") {

@@ -80,7 +80,8 @@ class ImagesControllerTest extends NuberTestCase
         $this->assertResponseOk();
         $this->assertResponseContains('<h2>Download Image</h2>');
         // Check that images have been loaded properly
-        $this->assertResponseContains('"alpine\/3.11\/amd64\/default"');
+        $this->assertResponseContains('alpine\/3.11\/amd64\/default (Container)');
+        $this->assertResponseContains('7225a2d994d06c3519209f302129251b41dcc7585723b23d4cee31e8e81d6e84');
         //alpine/3.10/amd64
     }
 
@@ -88,7 +89,7 @@ class ImagesControllerTest extends NuberTestCase
     {
         $this->login();
         $this->post('/images/download', [
-            'image' => 'alpine/3.10/amd64'
+            'fingerprint' => '7225a2d994d06c3519209f302129251b41dcc7585723b23d4cee31e8e81d6e84'
         ]);
         $this->assertRedirect('/images/index');
     }
