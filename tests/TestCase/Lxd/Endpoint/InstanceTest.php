@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use App\Lxd\Endpoint\Instance;
 
 use App\Lxd\Endpoint\Exception\NotFoundException;
-use App\Test\TestCase\Lxd\Endpoint\EndpointTestCase;
 use Origin\HttpClient\Exception\ClientErrorException;
 
 class InstanceTest extends EndpointTestCase
@@ -53,7 +52,7 @@ class InstanceTest extends EndpointTestCase
     {
         # Create Operation
         $this->assertBackgroundOperationSuccess(
-            (new Instance())->create('ubuntu/focal/arm64', 'instance-test', [
+            (new Instance())->create('ubuntu', 'instance-test', [
                 'config' => ['limits.cpu' => '2', 'limits.memory' => '512MB']
             ])
         );
