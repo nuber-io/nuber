@@ -71,5 +71,5 @@ $(function () {
     $(".alert").slideUp(500, function () {
       $(this).remove();
     });
-  }, 5000);
+  }, 10000);
 });
