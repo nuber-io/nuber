@@ -33,7 +33,11 @@ if [ "$EUID" -ne 0 ]; then
   abort "You must this as root or with sudo privledges."
 fi
 
-apt-get update -y
+
+if ! apt-get update -y; then
+  abort "Error updating the system, not internet access"
+fi
+
 apt-get upgrade -y
 apt-get install -y curl git nano unzip rsync zip apache2 libapache2-mod-php php php-apcu php-cli php-common php-curl php-intl php-json php-mailparse php-mbstring php-mysql php-opcache php-pear php-readline php-xml php-zip npm sqlite3 php-sqlite3 cron
 
