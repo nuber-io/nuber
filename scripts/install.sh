@@ -23,11 +23,6 @@ if  ! groups $USER | grep -q '\blxd\b' ; then
     exit 1
 fi
 
-curl https://www.nuber.io/container-setup.sh --output container-setup.sh
-
-if [ ! -f ./container-setup.sh ]; then
-    exit 1
-fi
 
 # Create the container
 image='images:ubuntu/focal/amd64'
@@ -39,9 +34,20 @@ if  ! lxc launch $image nuber-app ; then
     exit 1
 fi
 
+
+curl https://www.nuber.io/container-setup.sh --output container-setup.sh
+if [ ! -f ./container-setup.sh ]; then
+    exit 1
+fi
+
 # Push the file and run the instllation
 lxc file push container-setup.sh nuber-app/root/install 
-lxc exec nuber-app -- chmod +x /root/install 
+lxc exec nuber-app -- chmod +x /root/install
+
+# On production server installing in VM, there was a delay from creating the container before it had
+# internet acesss this caused for it fail
+echo "waiting...."
+sleep 10
 lxc exec nuber-app -- /root/install 
 
 # Open Port
