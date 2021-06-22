@@ -12,42 +12,47 @@
 declare(strict_types = 1);
 namespace App\Form;
 
+use App\Lib\Bytes;
 use Origin\Model\Record;
 
-class ResizeForm extends Record
+class ResizeDiskForm extends Record
 {
     protected $schema = [
-        'memory' => [
+ 
+        'disk' => [
             'type' => 'string',
             'length' => 10
         ],
-
-        'cpu' => [
-            'type' => 'string',
-            'length' => 10
+        'disk_usage' => [
+            'type' => 'integer'
         ]
     ];
 
     protected function initialize(): void
     {
-        $this->validate('memory', [
+        $this->validate('disk', [
             'required',
             'size' => [
                 'rule' => ['regex', '/^([0-9]{1,5})(MB|GB)$/'],
                 'message' => __('Invalid value, use MB or GB. e.g 1GB')
-            ]
-        ]);
-
-        $this->validate('cpu', [
-            'required',
-            'integer' => [
-                'rule' => 'integer',
-                'stopOnFail' => true
             ],
-            'between' => [
-                'rule' => ['range', 1,32], // TODO: this could be higher
-                'message' => __('Invalid value, 1-32 CPUs')
+            'space' => [
+                'rule' => [$this,'isEnough'],
+                'message' => __('This value needs to be higher than current usage'),
             ]
         ]);
+    }
+
+    /**
+     * TODO: I recall being a 300MB issue with ZFS, which was reserved space. So I have added this
+     * as a buffer.
+     *
+     * @return bool
+     */
+    public function isEnough($size): bool
+    {
+        $used = $this->disk_usage + 314572800;
+
+        return Bytes::fromString($size) > $used ;
     }
 }

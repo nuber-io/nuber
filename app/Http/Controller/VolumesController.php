@@ -82,6 +82,17 @@ class VolumesController extends ApplicationController
     {
         $this->request->header('Accept', 'application/json');
         $this->request->allowMethod('post');
+
+        $info = $this->lxd->instance->info($instance);
+
+        if ($info['type'] === 'virtual-machine' && $info['status'] === 'Running') {
+            return $this->renderJson([
+                'error' => [
+                    'message' => __('Virtual machines need to be stopped before you can change port forwarding configuration.'),
+                    'code' => 400
+                ]
+            ], 400);
+        }
        
         $volumeForm = VolumeForm::new([
             'name' => $volume,

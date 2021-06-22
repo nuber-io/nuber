@@ -88,7 +88,8 @@ class InstancesControllerTest extends NuberTestCase
             'disk' => '5GB', // TODO: increased from 1GB due to issue with BTRFS which is being checked out
             'cpu' => '1',
             'image' => 'ubuntu/focal/'  . ARCH,
-            'eth0' => 'vnet0'
+            'eth0' => 'vnet0',
+            'type' => 'container'
         ]);
       
         // if you get different url this means its download the image first.
@@ -221,17 +222,36 @@ class InstancesControllerTest extends NuberTestCase
     public function testResize()
     {
         $this->login();
-        $this->get('/instances/resize/c4');
+        $this->get('/instances/resize/ubuntu-test');
         $this->assertResponseOk();
-    }
 
-    public function testResizePost()
+        // Checks things are disabled
+        $this->assertResponseContains('<button type="submit" class="btn btn-primary" disabled>Resize</button>');
+        $this->assertResponseContains('<button type="submit" class="btn btn-primary" disabled>Resize Disk Space</button>');
+    }
+    /**
+     * @todo work on virtual machine tests, setup test servers on dedicated server.
+     */
+
+    public function testResizeMemPost()
     {
         $this->login();
         $this->post('/instances/resize/c4', [
             'memory' => '2GB',
             'cpu' => '2',
+            'form' => 'memory'
+        ]);
+        $this->assertRedirect('/instances/resize/c4');
+        $this->assertFlashMessage('The instance has been resized.');
+    }
+
+    public function testResizeDiskPost()
+    {
+        $this->login();
+        $this->post('/instances/resize/c4', [
+            'form' => 'disk',
             'disk' => '7GB'
+            
         ]);
         $this->assertRedirect('/instances/resize/c4');
         $this->assertFlashMessage('The instance has been resized.');
@@ -466,9 +486,6 @@ class InstancesControllerTest extends NuberTestCase
 
     public function testBackups()
     {
-        $this->disableMiddleware();
-        $this->disableErrorHandler();
-
         $this->login();
         $this->get('/instances/backups/c10');
         $this->assertResponseOk();
@@ -538,9 +555,6 @@ class InstancesControllerTest extends NuberTestCase
      */
     public function testMigrateCopy()
     {
-        $this->disableErrorHandler();
-        $this->disableMiddleware();
-        
         $this->login();
         $this->post('/instances/migrate/c11', [
             'host' => env('LXD_HOST_2'),

@@ -21,7 +21,11 @@
     }
 
     .distro-logo {
-        padding: 10px;
+        height: 65px;
+    }
+    .distro-logo  img {
+        display: block;
+        margin: 0 auto;
     }
 </style>
 
@@ -29,7 +33,7 @@
     <div class="float-right">
         <a href="/instances" class="btn btn-secondary"><?= __('Back') ?></a>
     </div>
-    <h2><?= __('Select Image') ?></h2>
+    <h2><?= __('Select Operating System') ?></h2>
     <hr>
     </hr>
 </div>
@@ -42,109 +46,14 @@
 </nav-->
 
 <div class="distribution-select">
-    <div class="row">
-        <div class="col-md-4 mb-2">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-ubuntu"></i></h5>
-                    <p class="card-text">Ubuntu</p>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= __('Select Version') ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <?php foreach ($distributions['ubuntu'] as $image => $description) : ?>
-                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-2">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-debian"></i></h5>
-                    <p class="card-text">Debian</p>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= __('Select Version') ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <?php foreach ($distributions['debian'] as $image => $description) : ?>
-                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-2">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-centos"></i></h5>
-                    <p class="card-text">Centos</p>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= __('Select Version') ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <?php foreach ($distributions['centos'] as $image => $description) : ?>
-                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="row mt-4 mb-4">
 
-    </div>
-
-    <div class="row">
-
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
             <div class="card text-center">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-fedora"></i></h5>
-                    <p class="card-text">Fedora</p>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= __('Select Version') ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <?php foreach ($distributions['fedora'] as $image => $description) : ?>
-                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-2">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-opensuse"></i></h5>
-                    <p class="card-text">openSUSE</p>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= __('Select Version') ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <?php foreach ($distributions['opensuse'] as $image => $description) : ?>
-                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-2">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fl fl-alpine"></i></h5>
-                    <p class="card-text">Alpine</p>
+                <div class="distro-logo"><img style="width: 220px; height:54px" src="/img/alpine-linux-logo.svg"></div>
+    
+                    <p class="card-text"></p>
                     <div class="btn-group">
                         <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <?= __('Select Version') ?>
@@ -159,22 +68,171 @@
             </div>
         </div>
 
-    </div>
+                
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img src="/img/archlinux-logo.png" ></div>
+
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['archlinux'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img style="width: 193px; height:65px" src="/img/centos-logo.svg"></div>
+            
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['centos'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img src="/img/debian-logo.png" ></div>
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['debian'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+    </div><!-- row -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img style="width: 65px; height:65px" src="/img/fedora-logo.svg" ></div>
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['fedora'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img style="width: 96px; height:60px" src="/img/opensuse-logo.svg"></div>
+        
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['opensuse'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img style="width: 220px; height:48px" src="/img/rocky.svg"></div>
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['rocky'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3 mb-2">
+            <div class="card text-center">
+                <div class="card-body">
+                <div class="distro-logo"><img src="/img/ubuntu-logo.gif" ></div>
+                    <p class="card-text"></p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?= __('Select Version') ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <?php foreach ($distributions['ubuntu'] as $image => $description) : ?>
+                                <a class="dropdown-item" href="/instances/create?image=<?= $image ?>/<?= $architecture ?>"><?= $description ?></a>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- row -->
+
+
 
     <div class="card">
         <div class="card-body">
-            <span class="card-text"><?= __('or select from the local image store') ?>&nbsp;</span>
+            <span class="card-text"><?= __('You can also select an existing image from the local image store') ?>&nbsp;</span>
                 <div class="btn-group">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?= __('Select Image') ?>
                     </button>
                     <div class="dropdown-menu">
-                        <?php foreach ($images as $fingerprint => $image) : ?>
-                            <a class="dropdown-item" href="/instances/create?image=<?= $image ?>&fingerprint=<?= $fingerprint ?>"><?= $image ?></a>
+                        <?php foreach ($images as $image) : ?>
+                            <a class="dropdown-item" href="/instances/create?image=<?= $image['alias'] ?>&fingerprint=<?= $image['fingerprint'] ?>&type=<?= $image['type'] ?>&store=yes"><?= $image['alias'] ?>&nbsp;(<?= $image['properties']['type'] === 'squashfs' ? __('Container') : ('Virtual machine')  ?>)</a>
                         <?php endforeach ?>
                     </div>
-                </div>
-            
+                </div>  
         </div>
-    </div>
+    </div>    
+</div>
+
+<div class="mt-4">
+    <small class=" text-muted text-center"><?= __('* All logos and registered trademarks are the property of their respective owners. All operating system logos used in this application are for identification purposes only.') ?></small>
 </div>

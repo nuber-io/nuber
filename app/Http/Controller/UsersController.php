@@ -30,7 +30,10 @@ class UsersController extends ApplicationController
             if ($user) {
                 $this->Auth->login($user);
 
-                return $this->redirect($this->Auth->redirectUrl());
+                /**
+                 * To prevent not found errors when using multiple hosts, send to instances
+                 */
+                return $this->redirect('/instances');
             }
             $this->Flash->error(__('Incorrect username or password.'));
         }

@@ -25,6 +25,9 @@
 
     <?php
     
+    $this->Form->controlDefaults([
+        'radio' => ['div' => 'form-check form-check-inline', 'class' => 'form-check-input', 'label' => ['class' => 'form-check-label']]]);
+
         echo $this->Form->create($instanceForm);
     
         echo $this->Form->control('name', [
@@ -32,7 +35,28 @@
             'after' => '<small class="form-text text-muted">'. __('Give your instance a name, remember that you can use lowercase alphanumeric characters and dashes, and can have a length between 2-64 characters.') .'</small>',
         ]);
 
-        ?> 
+        echo $this->Form->control(
+            'type',
+            [
+                'type' => 'radio',
+                'default' => $this->request->query('type') ?: 'container',
+                'options' => [
+                    'container' => __('Container'),
+                    'virtual-machine' => __('Virtual Machine')
+
+                ],
+                'disabled' => $this->request->query('store')
+            ],
+        );
+
+        if ($this->request->query('store')) {
+            echo $this->Form->hidden('type', ['value' => $this->request->query('type')]);
+        }
+
+        ?>        
+        <small class="form-text text-muted"><?=  __('Select whether this will be a container or virtual machine.') ?></small>  
+
+
         <legend  class="w-auto"><?= __('Resources') ?></legend>
         
          <?php

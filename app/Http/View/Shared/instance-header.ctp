@@ -95,6 +95,7 @@ $statusMap = [
     
     <li class="list-inline-item"><strong><?= __('IPv4') ?></strong>: <?= $ipv4 ? implode(', ', $ipv4) : __('none') ?></li>
     <li class="list-inline-item"><strong><?= __('IPv6') ?></strong>: <?= $ipv6 ? implode(', ', $ipv6) : __('none') ?></li>
+    <li class="list-inline-item"><strong><?= __('Type') ?></strong>: <?= $meta['type'] === 'virtual-machine' ? __('Virtual Machine') : __('Container')  ?> </li>
 </ul>
 
 <script>

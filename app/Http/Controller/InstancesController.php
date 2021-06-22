@@ -14,10 +14,11 @@ namespace App\Http\Controller;
 
 use Exception;
 use App\Lxd\Lxd;
+use App\Lib\Bytes;
 use Origin\Log\Log;
 use App\Lxd\LxdMeta;
 use Origin\Text\Text;
-use Origin\Core\Config;
+
 use App\Form\ResizeForm;
 use App\Form\VolumeForm;
 use Origin\Core\PhpFile;
@@ -25,8 +26,9 @@ use Origin\Http\Response;
 use App\Form\InstanceForm;
 use App\Form\SnapshotForm;
 use App\Form\IpAddressForm;
-use App\Lxd\Endpoint\Alias;
+
 use App\Form\NetworkingForm;
+use App\Form\ResizeDiskForm;
 use App\Service\Lxd\LxdMigrate;
 use App\Form\ForwardTrafficForm;
 use App\Service\Lxd\LxdDiskUsage;
@@ -100,7 +102,7 @@ class InstancesController extends ApplicationController
         $instances = $this->lxd->instance->list();
         // remove internal instances
         $instances = (new Collection($instances))->reject(function ($instance) {
-            return Text::startsWith('nuber-', $instance['name']) || $instance['type'] === 'virtual-machine';
+            return Text::startsWith('nuber-', $instance['name']);
         })->toArray();
 
         return $instances;
@@ -231,23 +233,33 @@ class InstancesController extends ApplicationController
         if ($instanceMeta instanceof Response) {
             return $instanceMeta;
         }
+        $defaultSize = '10GB';
 
+        //
         $resizeForm = ResizeForm::new();
+        $resizeDiskForm = ResizeDiskForm::new();
 
         if ($this->request->is('post')) {
-            $resizeForm = ResizeForm::patch($resizeForm, $this->request->data());
-         
-            if ($resizeForm->validates()) {
+            $resizeForm = ResizeForm::patch($resizeForm, $this->request->data(), ['fields' => ['memory','cpu','form']]);
+            $resizeDiskForm = ResizeDiskForm::patch($resizeDiskForm, $this->request->data(), ['fields' => ['disk','form']]);
+                  
+            // Invalidate for VM
+            if ($resizeDiskForm->form === 'disk') {
+                $originalSize = Bytes::fromString($instanceMeta['meta']['storage'] ?: $defaultSize);
+                $newSize = Bytes::fromString($resizeDiskForm->disk ?: $instanceMeta['meta']['storage']);
+    
+                if ($instanceMeta['type'] === 'virtual-machine' && $newSize <= $originalSize) {
+                    $resizeDiskForm->error('disk', __('The disk size can only be increased'));
+                }
+            }
+            
+            if ($resizeForm->form === 'disk' && $resizeDiskForm->validates()) {
                 $hardDisk = $instanceMeta['expanded_devices']['root'];
                 $response = $this->lxd->instance->edit($instance, [
-                    'config' => [
-                        'limits.memory' => $resizeForm->memory,
-                        'limits.cpu' => (string) $resizeForm->cpu
-                    ],
                     'devices' => [
                         'root' => [
                             'path' => $hardDisk['path'],
-                            'size' => $resizeForm->disk,
+                            'size' => $resizeDiskForm->disk,
                             'type' => $hardDisk['type'],
                             'pool' => $hardDisk['pool']
                         ]
@@ -256,23 +268,40 @@ class InstancesController extends ApplicationController
 
                 if (empty($response['err'])) {
                     $this->Flash->success(__('The instance has been resized.'));
-
+    
                     return $this->redirect(['action' => 'resize',$instance]);
                 }
-                $this->Flash->error(__('An error occured.')); // internal error
+                $this->Flash->error(__('An error occured.')); // internal erro
+            } elseif ($resizeForm->form === 'memory' && $resizeForm->validates()) {
+                $response = $this->lxd->instance->edit($instance, [
+                    'config' => [
+                        'limits.memory' => $resizeForm->memory,
+                        'limits.cpu' => (string) $resizeForm->cpu
+                    ]
+                ]);
+
+                if (empty($response['err'])) {
+                    $this->Flash->success(__('The instance has been resized.'));
+    
+                    return $this->redirect(['action' => 'resize',$instance]);
+                }
+                $this->Flash->error(__('An error occured.')); // internal erro
             } else {
                 $this->Flash->error(__('The instance could not be resized.'));
             }
         } else {
             $resizeForm->set([
                 'memory' => $instanceMeta['meta']['memory'],
-                'disk' => $instanceMeta['meta']['storage'],
                 'cpu' => $instanceMeta['meta']['cpu'],
+            ]);
+
+            $resizeDiskForm->set([
+                'disk' => $instanceMeta['meta']['storage'] ?? $defaultSize,
                 'disk_usage' => $instanceMeta['state']['disk']['root']['usage']
             ]);
         }
 
-        $this->set(compact('resizeForm'));
+        $this->set(compact('resizeForm', 'resizeDiskForm'));
     }
 
     public function console(string $instance)
@@ -292,7 +321,8 @@ class InstancesController extends ApplicationController
         $path = "/1.0/operations/{$response['id']}/websocket?secret={$response['metadata']['fds'][0]}";
         $this->set('path', $path);
         */
-    
+        $this->set('status', $info['status']);
+
         if ($info['status'] === 'Running') {
             /**
              * Detect the shell for the root user by parsing the password file
@@ -301,7 +331,7 @@ class InstancesController extends ApplicationController
              */
             $output = $this->lxd->instance->execCommand($instance, 'grep ^root /etc/passwd');
             
-            $shell = explode(':', $output)[6]; // ?? '/bin/sh';
+            $shell = explode(':', $output)[6] ?? '/bin/sh';
            
             $response = $this->lxd->instance->execInteractive($instance, $shell, [
                 'environment' => [
@@ -317,7 +347,6 @@ class InstancesController extends ApplicationController
             );
         }
         
-        $this->set('status', $info['status']);
         $this->set('node', Lxd::host());
     }
 
@@ -333,7 +362,7 @@ class InstancesController extends ApplicationController
         if ($info instanceof Response) {
             return $info;
         }
-      
+
         if ($this->request->is('post')) {
             $forwardTrafficForm = ForwardTrafficForm::patch($forwardTrafficForm, $this->request->data());
             $forwardTrafficForm->checkPortsInUse($info['devices']);
@@ -343,14 +372,18 @@ class InstancesController extends ApplicationController
              * won't start/work. Need to change the IP address.
              *
              * @internal ipv6 addresses are square notation e.g connect=tcp:[2001:db8::1]:80
-             * @see https://lxd.readthedocs.io/en/latest/instances/#type-proxy
+             * @see https://linuxcontainers.org/lxd/docs/master/instances#type-proxy
              *
              * Also for IPV6 you have to use [::] not 0.0.0.0
              */
             if ($forwardTrafficForm->validates()) {
                 $hostIp = Lxd::host();
+
+                /**
+                 * VMs only support NAT mode
+                 */
          
-                if (isset($info['devices']['eth0']['ipv4.address'])) {
+                if ($info['type'] === 'virtual-machine' || isset($info['devices']['eth0']['ipv4.address'])) {
                     // uses iptables/nftables requires a static IP address to be set
                     $deviceConfig = [
                         'connect' => "tcp:0.0.0.0:{$forwardTrafficForm->connect}",
@@ -358,7 +391,7 @@ class InstancesController extends ApplicationController
                         'type' => 'proxy',
                         'nat' => 'true'
                     ];
-                } else {
+                } elseif ($info['type'] === 'container') {
                     // Uses a seperate process for each proxy device
                     $deviceConfig = [
                         'connect' => "tcp:127.0.0.1:{$forwardTrafficForm->connect}",
@@ -383,6 +416,14 @@ class InstancesController extends ApplicationController
                 }
             } else {
                 $this->Flash->error(__('Traffic fowarding could not be setup.'));
+            }
+        } else {
+            $userSetIPAddress = $info['devices']['eth0']['ipv4.address'] ?? null;
+            $assignedIPAddress = $info['state']['network']['eth0']['addresses'][0]['address'] ?? null;
+    
+            // Check for warnings
+            if ($info['status'] === 'Running' && $userSetIPAddress && $userSetIPAddress !== $assignedIPAddress) {
+                $this->Flash->warning(__('The IP address for this instance does not match the configured IP, the proxy configuration might not be working.'));
             }
         }
     
@@ -439,7 +480,7 @@ class InstancesController extends ApplicationController
             }
         }
        
-        $this->set(compact('list', 'attachVolumeForm', 'sizes', 'volumes'));
+        $this->set(compact('list', 'attachVolumeForm', 'sizes', 'volumes', 'info'));
     }
 
     /**
@@ -722,7 +763,7 @@ class InstancesController extends ApplicationController
              * as it may cause some unexpected results or errors when resizing or trying to attach a volume etc.
              */
             $info = collection($info)->filter(function ($instance) use ($name) {
-                return $instance['name'] === $name && $instance['type'] === 'container';
+                return $instance['name'] === $name;
             });
         } catch (ConnectionException $exception) {
             return $this->redirect(['action' => 'index']);
@@ -747,15 +788,21 @@ class InstancesController extends ApplicationController
 
         $this->set('distributions', $distributions);
 
+        try {
+            $storagePoolImages = $this->lxd->image->list() ;
+        } catch (ConnectionException $exception) {
+            return $this->redirect(['action' => 'index']);
+        }
         $images = [];
 
-        foreach ($this->lxd->image->list() as $image) {
+        foreach ($storagePoolImages as $index => $image) {
             $default = substr($image['fingerprint'], 0, 12);
             if (! empty($image['properties'])) {
                 $default = $image['properties']['os'] . ' ' . $image['properties']['release'] . ' ' . $image['properties']['architecture'];
             }
 
-            $images[$image['fingerprint']] = $image['aliases'][0]['name'] ?? $default;
+            $image['alias'] = $image['aliases'][0]['name'] ?? $default;
+            $images[] = $image;
         }
 
         $result = (new LxdArchitecture($this->lxd))->dispatch();
@@ -779,18 +826,26 @@ class InstancesController extends ApplicationController
             if ($instanceForm->validates()) {
                 $this->Session->write('instanceCreate', $instanceForm->toArray());
 
-                $fingerprint = $instanceForm->image;
                 # Get fingerprint, if no fingerprint then download
-                if (! $this->isFingerprint($fingerprint)) {
-                    $fingerprint = $this->getFingerprint($fingerprint);
-                    if (! $fingerprint) {
-                        return $this->redirect(['action' => 'index','?' => ['download' => $instanceForm->image,'instance' => $instanceForm->name]]);
+                if (! $this->isFingerprint($instanceForm->image)) {
+                    $instanceForm->fingerprint = $this->getFingerprint($instanceForm->image, $instanceForm->type);
+
+                    //  catch errors e.g. rocky/8 which should be rockylinux/8
+                    if (empty($instanceForm->fingerprint)) {
+                        $this->Flash->error(__('Unkown image {image}', ['image' => $instanceForm->image]));
+
+                        return $this->redirect(['action' => 'index']);
+                    }
+
+                    $this->Session->write('instanceCreate', $instanceForm->toArray());
+
+                    $images = collection($this->lxd->image->list(['recursive' => 1]))->extract('fingerprint')->toList();
+
+                    if (! in_array($instanceForm->fingerprint, $images)) {
+                        return $this->redirect(['action' => 'index','?' => ['download' => $instanceForm->fingerprint,'instance' => $instanceForm->name]]);
                     }
                 }
-             
-                $instanceForm->fingerprint = $fingerprint;
-                $this->Session->write('instanceCreate', $instanceForm->toArray());
-    
+
                 return $this->redirect(['action' => 'index','?' => ['create' => $instanceForm->name]]);
             }
   
@@ -827,11 +882,8 @@ class InstancesController extends ApplicationController
 
         $data = $this->Session->read('instanceCreate');
 
-        $result = (new LxdImageDownload($this->lxd))->dispatch(
-            $data['image'],
-            Config::read('App.imageDownloadTimeout')
-        );
-        
+        $result = (new LxdImageDownload($this->lxd))->dispatch($data['fingerprint']);
+
         if ($result->success()) {
             $this->Flash->success(__('The image has been downloaded.'));
 
@@ -842,8 +894,6 @@ class InstancesController extends ApplicationController
             return $this->renderJson(['data' => $result->data]);
         }
 
-        Log::error($result->error('message'));
-    
         return $this->renderJson([
             'error' => [
                 'message' => $result->error('message'),
@@ -876,6 +926,7 @@ class InstancesController extends ApplicationController
             $instance['disk'],
             $instance['cpu'],
             $instance['eth0'],
+            $instance['type']
         );
 
         if ($result->success()) {
@@ -1083,17 +1134,56 @@ class InstancesController extends ApplicationController
     }
 
     /**
-     * Gets the fingerprint for an alias, if the alias does not
-     * exist it will download the image
+     * Gets the fingerprint for an alias, searches the image store first, if not then it searches
+     * the remote image catalog
      *
      * @param string $name
+     * @param string $type
      * @return string|null
      */
-    private function getFingerprint(string $name): ?string
+    private function getFingerprint(string $name, string $type): ?string
     {
-        $alias = new Alias();
+        $images = $this->lxd->image->list();
 
-        return in_array($name, $alias->list(['recursive' => 0])) ? $alias->get($name)['target'] : null;
+        // Search in local store
+        $result = collection($images)->filter(function ($image) use ($name, $type) {
+            $alias = $image['update_source']['alias'] ?? null;
+
+            return $image['type'] === $type && $alias === $name;
+        })->toList();
+
+        if ($result) {
+            return $result[0]['fingerprint'];
+        }
+     
+        if (! file_exists(config_path('images.json'))) {
+            throw new NotFoundException('Images.json not found');
+        }
+
+        $images = json_decode(file_get_contents(config_path('images.json')), true);
+
+        /*
+        {
+            "name": "Alpine 3.14 arm64",
+            "alias": "alpine/3.14/arm64/default",
+            "arch": "arm64",
+            "variant": "default",
+            "containerFingerprint": "bcabb2f121c26e7a12c4bb8087c9a65ebcbc5df9a0fde442509d1e98ea1ac733",
+            "virtualMachineFingerprint": "456c66760214b96d2a2b6d8a6087125c89ceb6daa36984357754ec56a8df7125"
+        }
+        */
+
+        $result = collection($images)->filter(function ($image) use ($name, $type) {
+            return $image['alias'] === $name . '/default';
+        })->toList();
+      
+        if (! $result) {
+            return null;
+        }
+
+        $key = $type === 'container' ? 'containerFingerprint' : 'virtualMachineFingerprint';
+
+        return $result[0][$key] ?: null;
     }
 
     private function isFingerprint(string $string): bool

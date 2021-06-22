@@ -27,11 +27,37 @@ class DevicesController extends ApplicationController
     {
         $this->request->header('Accept', 'application/json');
         $this->request->allowMethod('delete');
-        
+
+        $info = $this->lxd->instance->info($instance);
+
+        if ($info['type'] === 'virtual-machine' && $info['status'] === 'Running') {
+            return $this->renderError(__('Virtual machines need to be stopped before you can change port forwarding configuration.'), 400);
+        }
+      
         $this->lxd->device->remove($instance, $device);
 
-        $this->Flash->success(__('The port forwarding configuration has been deleted.'));
+        /**
+         * Unable to check without waiting for 1 second after removing
+         */
+        sleep(1);
+        $info = $this->lxd->instance->info($instance);
+       
+        if (empty($info['devices'][$device])) {
+            $this->Flash->success(__('The port forwarding configuration has been deleted.'));
 
-        return $this->renderJson(['data' => []]);
+            return $this->renderJson(['data' => []]);
+        }
+
+        return $this->renderError(__('The port forwarding configuration could not be deleted.'), 500);
+    }
+
+    private function renderError(string $message, int $code = 500)
+    {
+        return $this->renderJson([
+            'error' => [
+                'message' => $message,
+                'code' => $code
+            ]
+        ], $code);
     }
 }

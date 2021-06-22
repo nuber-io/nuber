@@ -257,10 +257,13 @@ class Instance extends Endpoint
         $response = $this->operation->wait($response['id']);
 
         $out = '';
-        foreach ($response['metadata']['output'] as $log) {
-            $out .= $this->log->get($name, $log);
+        // virtual machine friendly
+        if (isset($response['metadata']['output'])) {
+            foreach ($response['metadata']['output'] as $log) {
+                $out .= $this->log->get($name, $log);
+            }
         }
-
+       
         return $out;
     }
 
@@ -343,7 +346,7 @@ class Instance extends Endpoint
                      */
                     'instance_only' => true  // ignore snapshots
                 ],
-                'devices' => isset($info['devices']) ?  $this->removeIP($info['devices']) : null,
+                'devices' => ! empty($info['devices']) ? $info['devices'] : null,
                 'ephemeral' => $info['ephemeral'],
                 'stateful' => false
                
@@ -351,21 +354,6 @@ class Instance extends Endpoint
         ]);
 
         return $response['id'];
-    }
-
-    /**
-     * To AID copying
-     *
-     * @param array $devices
-     * @return array|null !golang errors if return an empty array
-     */
-    private function removeIP(array $devices): ?array
-    {
-        if (isset($devices['eth0'])) {
-            unset($devices['eth0']['ipv4.address'],$devices['eth0']['ipv6.address']);
-        }
-
-        return $devices ?: null;
     }
 
     /**
@@ -502,7 +490,7 @@ class Instance extends Endpoint
     */
     public function publish(string $instance, array $options = []): string
     {
-        $options += ['alias' => null, 'public' => false];
+        $options += ['alias' => null, 'public' => false,'properties' => null];
 
         $requestOptions = [
             'aliases' => [],
@@ -512,6 +500,10 @@ class Instance extends Endpoint
             ],
             'public' => $options['public']
         ];
+
+        if ($options['properties']) {
+            $requestOptions['properties'] = $options['properties'];
+        }
 
         if ($options['alias']) {
             $requestOptions['aliases'][] = [

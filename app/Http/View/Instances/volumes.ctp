@@ -7,6 +7,11 @@
     }*/
 </style>
 <?= $this->renderShared('instance-header') ?>
+<?php
+
+$isVirtualMachineAndRunning = $info['type'] === 'virtual-machine' && $info['status'] === 'Running';
+
+?>
 <div class="row">
     <div class="col-2">
         <?= $this->renderShared('instance-nav') ?>
@@ -39,10 +44,19 @@
                 echo $this->Form->button(__('Attach Volume'), [
                     'type' => 'submit',
                     'class' => 'btn btn-primary',
-                    'disabled' => empty($volumes) ? true : null
+                    'disabled' => $isVirtualMachineAndRunning || empty($volumes)? true : null
                 ]);
                 echo $this->renderShared('spinner', ['class' => 'btn-spinner']);
                 echo $this->Form->end();
+
+                if ($isVirtualMachineAndRunning) {
+                    echo $this->Html->tag(
+                        'div',
+                        '<i class="fas fa-info-circle mr-1"></i>' .
+                        $this->Html->tag('small', __('Virtual machines need to be stopped to attach or detach a volume.')),
+                        ['class' => 'mt-2']
+                    );
+                }
                 ?>
             </div>
         </div><!-- card -->
@@ -103,7 +117,8 @@
             }).always(function(){
                 hideSpinner();
             }).fail(function(xhr) {
-                alertError('<?= __('Error detaching volume') ?>');
+                var response = JSON.parse(xhr.responseText);
+                alertError(response.error.message);
                 debugError(xhr);
             });
          });

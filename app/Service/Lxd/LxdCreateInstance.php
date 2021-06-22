@@ -43,13 +43,14 @@ class LxdCreateInstance extends ApplicationService
      * @param string $eth0
      * @return \Origin\Service\Result|null
      */
-    protected function execute(string $name, string $fingerprint, string $memory, string $disk, string $cpu, string $eth0): ?Result
+    protected function execute(string $name, string $fingerprint, string $memory, string $disk, string $cpu, string $eth0, string $type = 'container'): ?Result
     {
-        $uuid = $this->client->instance->create($fingerprint, $name, [
+        $config = [
             'profiles' => [],
             'config' => [
                 'limits.memory' => $memory,
-                'limits.cpu' => (string) $cpu
+                'limits.cpu' => (string) $cpu,
+                'security.secureboot' => 'false'  // need for VMs
             ],
             'devices' => [
                 'root' => [
@@ -57,8 +58,15 @@ class LxdCreateInstance extends ApplicationService
                     'pool' => 'default',
                     'type' => 'disk'
                 ]
-            ]
-        ]);
+            ],
+            'type' => $type
+        ];
+
+        if ($type === 'virtual-machine') {
+            $config['security.secureboot'] = 'false';
+        }
+
+        $uuid = $this->client->instance->create($fingerprint, $name, $config);
 
         $response = $this->client->operation->wait($uuid);
 

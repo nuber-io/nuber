@@ -104,7 +104,7 @@ class LxdStartInstance extends ApplicationService
         if (! $device) {
             return new Result([
                 'error' => [
-                    'message' => 'Error starting networking',
+                    'message' => __('Error starting networking'),
                     'code' => 500
                 ]
             ]);
@@ -170,7 +170,7 @@ class LxdStartInstance extends ApplicationService
     {
         $attempts = 0;
         $device = null;
-        while (! $device && $attempts < 5) {
+        while (! $device && $attempts < 10) {
             $device = $this->getNetworkDevice($name);
             $attempts++;
             sleep(1);
@@ -189,7 +189,11 @@ class LxdStartInstance extends ApplicationService
     {
         $state = $this->client->instance->state($name);
 
-        $haystack = $state['network']['eth0']['addresses'] ?? [];
+        $haystack = [];
+        if (! empty($state['network'])) {
+            $device = array_key_first($state['network']);
+            $haystack = $state['network'][$device]['addresses'] ?? [];
+        }
 
         return $this->searchArray('family', 'inet', $haystack);
     }

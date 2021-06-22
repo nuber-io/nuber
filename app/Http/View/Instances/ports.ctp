@@ -53,7 +53,14 @@
                     $nicType = $meta['expanded_devices']['eth0']['nictype'] ?? null;
                     $parent = $meta['expanded_devices']['eth0']['parent'] ?? null;
 
-                    $enable = $nicType === 'bridged' && $parent !== 'nuber-bridged';
+                    $nuberBridged = $nicType === 'bridged' && $parent !== 'nuber-bridged';
+
+                    // VMs only support NAT and therefore required a static IP address
+                    $requiresStaticIPAddresss = $meta['type'] === 'virtual-machine' && empty($meta['devices']['eth0']['ipv4.address']);
+                        
+                    $isVirtualMachineAndRunning = $meta['type'] === 'virtual-machine' && $meta['status'] === 'Running';
+
+                    $enable = $nuberBridged && ! $requiresStaticIPAddresss && ! $isVirtualMachineAndRunning ;
 
                     echo $this->Form->button(__('Forward Traffic'), [
                         'type' => 'submit',
@@ -64,7 +71,7 @@
                     echo $this->renderShared('spinner', ['class' => 'btn-spinner']);
                     echo $this->Form->end();
 
-                    if (! $enable) {
+                    if (! $nuberBridged) {
                         /**
                          * No need for port forwarding if making the instance visible on the host or the internet.
                          * This is being done to prevent problems or issues.
@@ -72,10 +79,25 @@
                         echo $this->Html->tag(
                             'div',
                             '<i class="fas fa-info-circle mr-1"></i>' .
-                            $this->Html->tag('small', __('This is feature is disabled as you are using macvlan or a network bridge.')),
+                            $this->Html->tag('small', __('This feature is disabled as you are using macvlan or a network bridge.')),
+                            ['class' => 'mt-2']
+                        );
+                    } elseif ($requiresStaticIPAddresss) {
+                        echo $this->Html->tag(
+                            'div',
+                            '<i class="fas fa-info-circle mr-1"></i>' .
+                            $this->Html->tag('small', __('You need to set a static IP addresess for port forwarding to work with virtual machines.')),
+                            ['class' => 'mt-2']
+                        );
+                    } elseif ($isVirtualMachineAndRunning) {
+                        echo $this->Html->tag(
+                            'div',
+                            '<i class="fas fa-info-circle mr-1"></i>' .
+                            $this->Html->tag('small', __('Virtual machines need to be stopped before you can change port fowarding configuration.')),
                             ['class' => 'mt-2']
                         );
                     }
+
                 ?>
             </div>
         </div><!-- card -->
@@ -131,7 +153,8 @@
             }).always(function(){
                 hideSpinner();
             }).fail(function(xhr) {
-                alertError('<?= __('Error removing forwarding') ?>');
+                var response = JSON.parse(xhr.responseText);
+                alertError(response.error.message);
                 debugError(xhr);
             });
         });

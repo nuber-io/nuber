@@ -76,6 +76,10 @@ class InstanceForm extends Record
             'space' => [
                 'rule' => [$this,'isEnough'],
                 'message' => __('This value needs to be higher than current usage'),
+            ],
+            'minimum' => [
+                'rule' => [$this,'minimum'],
+                'message' => __('Virtual machines have a minimum of 10GB'), // This is because default is 10GB and cant be made smaller
             ]
         ]);
 
@@ -137,6 +141,15 @@ class InstanceForm extends Record
         }
 
         return $name;
+    }
+
+    public function minimum($value) : bool
+    {
+        if ($this->type === 'container') {
+            return true;
+        }
+
+        return Bytes::fromString($value) >= Bytes::fromString('10GB');
     }
 
     /**
