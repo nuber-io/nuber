@@ -33,7 +33,7 @@ return  [
         'opensuse/15.2' => 'OpenSUSE 15.2'
     ],
     'rocky' => [
-        'rocky/8' => 'Rocky Linux 8',
+        'rockylinux/8' => 'Rocky Linux 8',
     ],
     'archlinux' => [
         'archlinux/current' => 'Archlinux (Latest)'
