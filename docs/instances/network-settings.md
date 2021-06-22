@@ -26,4 +26,6 @@ By default when you create an instance, the instance will be configured to use t
 **Bridged Network** Instances have internet access and can be reached from outside, and they can communicate with the host.
 When you installed `nuber` you would have been asked if you want to setup a bridged network, this would of created the device `nuber-bridged`[^1], which is used by Nuber. If you did not start it then see the `install.sh`, as it needs to be running and working. If you are using this on `eth1` or you dont want to use DCHP for allocating IP addresses then you will need to adjust the network settings inside the container.
 
+If your cloud hosting provider gives you a virtual MAC address, here you can also set this. To randomly generate a MAC address leave the address empty.
+
 [^1]: In version 0.1.0, the network bridge was created as `nuberbr1`.

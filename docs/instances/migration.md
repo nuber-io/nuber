@@ -18,6 +18,7 @@ Moving transfers the instance and its snapshots to the remote host, the local in
 Things to consider:
 
 - The LXD versions should be the same, use the LTS or the latest but not both. It is better to use the LTS version as this is what we mainly use for testing
-- The the network that the instance is on will need to be configured on the remote host
+- The virtual network that the instance is on will need to be configured on the remote host
+- The virtual network on the remote host should have the same IPv4 range configured if you are migrating instances using static IP addreses
 - If you have set a static IP address, and this is already being used in another instance on the destination server or the network is using a different IP range, then this will prevent port forwarding from working properly, so you will need reset the static IP address on the destination server.
 - The system time should be synchronized
