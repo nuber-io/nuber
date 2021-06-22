@@ -229,8 +229,4 @@ $isLoadScreen = $this->request->query('download') || $this->request->query('crea
                 debugError(xhr);
             });
         }
-   
-       
-
-
     </script>

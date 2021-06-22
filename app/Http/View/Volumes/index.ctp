@@ -30,7 +30,7 @@ use App\Lxd\Lxd;
     <hr>
     </hr>
 </div>
-<p><?= __('Volumes are block storage devices that provide additional storage space to your instances, a volume can only be attached
+<p><?= __('Volumes are storage devices that provide additional storage space to your instances, a volume can only be attached
 to one instance at a time, but can also be easily detached.') ?> </p>
 
 <div class="volumes index">
