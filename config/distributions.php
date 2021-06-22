@@ -8,8 +8,8 @@ return  [
         'ubuntu/xenial' => 'Xenial Xerus 16.04'
     ],
     'debian' => [
-        'debian/buster' => 'Buster 10',
-        'debian/stretch' => 'Stretch 9'
+        'debian/buster' => 'Debian Buster 10',
+        'debian/stretch' => 'Debian Stretch 9'
     ],
     'centos' => [
         'centos/8' => 'CentOS 8',
@@ -31,5 +31,11 @@ return  [
     'opensuse' => [
         'opensuse/15.3' => 'OpenSUSE 15.3',
         'opensuse/15.2' => 'OpenSUSE 15.2'
+    ],
+    'rocky' => [
+        'rocky/8' => 'Rocky Linux 8',
+    ],
+    'archlinux' => [
+        'archlinux/current' => 'Archlinux (Latest)'
     ]
 ];
