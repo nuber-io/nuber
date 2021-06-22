@@ -43,8 +43,7 @@ class LxdSetupHost extends ApplicationService
         'config' => [
             'ipv4.address' => '10.0.0.1/24',
             'ipv4.nat' => 'true',
-            'ipv6.address' => 'fd00:0000:0000:0000::1/48', //  Unique local address (ULA)
-            'ipv6.nat' => 'true'
+            'ipv6.address' => 'none',
         ]
     ];
 
