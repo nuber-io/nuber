@@ -252,7 +252,7 @@ class InstancesControllerTest extends NuberTestCase
         ]);
 
         $this->assertRedirect('/instances/rename/rename-test');
-        $this->assertResponseNotContains('An error occured.');
+        $this->assertResponseNotContains('An error occurred.');
     }
 
     /**

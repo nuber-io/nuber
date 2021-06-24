@@ -105,7 +105,7 @@ class NetworksController extends ApplicationController
                     return $this->redirect(['action' => 'index']);
                 }
 
-                $this->Flash->error(__('An error occured when trying to create the network.'));
+                $this->Flash->error(__('An error occurred when trying to create the network.'));
             } else {
                 $this->Flash->error(__('The network could not be created.'));
             }

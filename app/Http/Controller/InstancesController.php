@@ -211,7 +211,7 @@ class InstancesController extends ApplicationController
                     
                     return $this->redirect(['action' => 'rename', $renameForm->name]);
                 }
-                $this->Flash->error(__('An error occured.')); // internal error
+                $this->Flash->error(__('An error occurred.')); // internal error
             } else {
                 $this->Flash->error(__('The instance could not be renamed.'));
             }
@@ -271,7 +271,7 @@ class InstancesController extends ApplicationController
     
                     return $this->redirect(['action' => 'resize',$instance]);
                 }
-                $this->Flash->error(__('An error occured.')); // internal erro
+                $this->Flash->error(__('An error occurred.')); // internal erro
             } elseif ($resizeForm->form === 'memory' && $resizeForm->validates()) {
                 $response = $this->lxd->instance->edit($instance, [
                     'config' => [
@@ -285,7 +285,7 @@ class InstancesController extends ApplicationController
     
                     return $this->redirect(['action' => 'resize',$instance]);
                 }
-                $this->Flash->error(__('An error occured.')); // internal erro
+                $this->Flash->error(__('An error occurred.')); // internal erro
             } else {
                 $this->Flash->error(__('The instance could not be resized.'));
             }
@@ -411,7 +411,7 @@ class InstancesController extends ApplicationController
                     // IMPORTANT: Data needs to be reloaded, I prefer this
                     return $this->redirect(['action' => 'ports',$instance]);
                 } catch (Exception $exception) {
-                    $this->Flash->error(__('An error occured.')); // internal error
+                    $this->Flash->error(__('An error occurred.')); // internal error
                     Log::error($exception->getMessage());
                 }
             } else {
@@ -465,7 +465,7 @@ class InstancesController extends ApplicationController
                     return $this->redirect(['action' => 'volumes',$instance]); // reload page
                 }
                 
-                $this->Flash->error(__('An error occured.')); // internal error
+                $this->Flash->error(__('An error occurred.')); // internal error
             } else {
                 $this->Flash->error(__('The volume could not be attached.'));
             }
@@ -508,7 +508,7 @@ class InstancesController extends ApplicationController
 
                     return $this->redirect(['action' => 'snapshots',$instance]);
                 } else {
-                    $this->Flash->error(__('An error occured.')); // internal error
+                    $this->Flash->error(__('An error occurred.')); // internal error
                 }
             } else {
                 $this->Flash->error(__('The snapshot could not be created.'));
@@ -1061,7 +1061,7 @@ class InstancesController extends ApplicationController
                 return $this->redirect('/instances');
             }
 
-            $this->Flash->error(__('An error occured.')); // internal error
+            $this->Flash->error(__('An error occurred.')); // internal error
         }
     }
 
