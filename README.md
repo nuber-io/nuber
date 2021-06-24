@@ -16,7 +16,7 @@ Nuber is a web-based software with an underlying set of processes for setting up
 
 You will need a server or a virtual machine with Linux installed, it is recommened that use [Ubuntu server LTS](https://ubuntu.com/download/server), for performance, security and easy of use. If you are setting this up at home on a MAC or a development machine, then you can install Ubuntu inside a virtual machine using [virtualbox](https://www.virtualbox.org/) or [Parallels Desktop](https://www.parallels.com/uk/products/desktop/). Please note that, LXD can't be installed inside a Docker container.
 
-Its recommended to have a separate partition for the LXD storage pool, so do this during the install, create two partitions, one for the operating system, at least 15GB for `/` and leave the remaining space for the storage pool partition. Note, for production servers, you will need to ensure that you have enough free space for temporary files, such as when migrating containers to different servers, so 25GB or more is better.
+Its recommended to have a separate partition for the LXD storage pool, so do this during the install, create two partitions, one for the operating system, at least 25GB for `/` and leave the remaining space for the storage pool partition.
 
 The recommended storage pool driver is `ZFS`, see [server setup using ZFS storage driver](docs/lxd/ubuntu-zfs.md) for more information on how to set this up.
 
