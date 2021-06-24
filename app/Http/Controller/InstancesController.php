@@ -824,12 +824,16 @@ class InstancesController extends ApplicationController
             $instanceForm->addExisting($this->lxd->instance->list(['recursive' => 0]));
 
             if ($instanceForm->validates()) {
-                $this->Session->write('instanceCreate', $instanceForm->toArray());
 
-                # Get fingerprint, if no fingerprint then download
-                if (! $this->isFingerprint($instanceForm->image)) {
+                // deal with creating instances from the store directly
+                if ($this->isFingerprint($instanceForm->image)) {
+                    $instanceForm->fingerprint = $instanceForm->image;
+                    $this->Session->write('instanceCreate', $instanceForm->toArray());
+                } else {
+                    # Get fingerprint, if no fingerprint then download
                     $instanceForm->fingerprint = $this->getFingerprint($instanceForm->image, $instanceForm->type);
-
+                    $this->Session->write('instanceCreate', $instanceForm->toArray());
+                    
                     //  catch errors e.g. rocky/8 which should be rockylinux/8
                     if (empty($instanceForm->fingerprint)) {
                         $this->Flash->error(__('Unkown image {image}', ['image' => $instanceForm->image]));
@@ -837,10 +841,7 @@ class InstancesController extends ApplicationController
                         return $this->redirect(['action' => 'index']);
                     }
 
-                    $this->Session->write('instanceCreate', $instanceForm->toArray());
-
                     $images = collection($this->lxd->image->list(['recursive' => 1]))->extract('fingerprint')->toList();
-
                     if (! in_array($instanceForm->fingerprint, $images)) {
                         return $this->redirect(['action' => 'index','?' => ['download' => $instanceForm->fingerprint,'instance' => $instanceForm->name]]);
                     }

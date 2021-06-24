@@ -127,6 +127,45 @@ class InstancesControllerTest extends NuberTestCase
         $this->assertContains('create-test', collection($instances)->extract('name')->toList());
     }
 
+    /**
+     * @return void
+     */
+    public function testNewInstanceUsingFingerPrintPost()
+    {
+        $this->login();
+
+        $fingerprint = ARCH === 'amd64' ? '4216b0190243f3110354038970059581c3ba542b01a2e6800845cc37ff1a0feb' : 'ef3729162e2290205332ceeaa7b620356fec5389899787aea841433dc2f4a637';
+   
+        $this->post('/instances/create?image=Ubuntu+focal&type=container&store=yes&fingerprint='  . $fingerprint, [
+            'name' => 'create-test2',
+            'memory' => '1GB',
+            'disk' => '5GB',
+            'cpu' => '1',
+            'image' => $fingerprint, // this test uses the fingerprint for
+            'eth0' => 'vnet0',
+            'type' => 'container'
+        ]);
+      
+        // if you get different url this means its download the image first.
+        $this->assertRedirect(['controller' => 'Instances','action' => 'index','?' => ['create' => 'create-test2']]);
+        $this->assertSessionHasKey('instanceCreate');
+
+        return $this->controller->request()->session()->toArray();
+    }
+
+    /**
+     * @depends testNewInstanceUsingFingerPrintPost
+     */
+    public function testNewInstanceCreatingFromFingerprint(array $session)
+    {
+        $this->session($session);
+
+        $this->post('/instances/init/create-test2');
+        
+        $this->assertResponseOk();
+        $this->assertResponseRegExp('/{"data":{"name":"create-test2","ip_address":"10.0.0.[\d]+"}}/');
+    }
+
     public function testStart()
     {
         $this->login();
@@ -617,6 +656,7 @@ class InstancesControllerTest extends NuberTestCase
     
         static::deleteInstance('instance-test');
         static::deleteInstance('create-test');
+        static::deleteInstance('create-test2');
         static::deleteInstance('clone-test');
         static::deleteInstance('rename-test');
 
