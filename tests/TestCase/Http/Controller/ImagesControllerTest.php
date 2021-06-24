@@ -81,8 +81,8 @@ class ImagesControllerTest extends NuberTestCase
         $this->assertResponseContains('<h2>Download Image</h2>');
         // Check that images have been loaded properly
         $this->assertResponseContains('alpine\/3.11\/amd64\/default (Container)');
-        $this->assertResponseContains('7225a2d994d06c3519209f302129251b41dcc7585723b23d4cee31e8e81d6e84');
-        //alpine/3.10/amd64
+
+        // no longer checking fingerprint as this changes regulary
     }
 
     public function testDownloadFromRemotePost()
