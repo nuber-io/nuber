@@ -134,8 +134,13 @@ class InstancesControllerTest extends NuberTestCase
     {
         $this->login();
 
-        $fingerprint = ARCH === 'amd64' ? '4216b0190243f3110354038970059581c3ba542b01a2e6800845cc37ff1a0feb' : 'ef3729162e2290205332ceeaa7b620356fec5389899787aea841433dc2f4a637';
-   
+        $images = json_decode(file_get_contents(config_path('images.json')), true);
+
+        $key = array_search('ubuntu/focal/' . ARCH . '/default', array_column($images, 'alias'));
+        $this->assertNotFalse($key);
+
+        $fingerprint = $images[$key]['containerFingerprint'];
+
         $this->post('/instances/create?image=Ubuntu+focal&type=container&store=yes&fingerprint='  . $fingerprint, [
             'name' => 'create-test2',
             'memory' => '1GB',
@@ -161,7 +166,7 @@ class InstancesControllerTest extends NuberTestCase
         $this->session($session);
 
         $this->post('/instances/init/create-test2');
-        
+    
         $this->assertResponseOk();
         $this->assertResponseRegExp('/{"data":{"name":"create-test2","ip_address":"10.0.0.[\d]+"}}/');
     }
