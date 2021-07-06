@@ -12,6 +12,8 @@
 declare(strict_types = 1);
 namespace App\Http\Controller;
 
+use Origin\Log\Log;
+
 /**
  * @property \App\Model\User $User
  */
@@ -27,13 +29,18 @@ class UsersController extends ApplicationController
         
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
+
             if ($user) {
                 $this->Auth->login($user);
-
                 /**
                  * To prevent not found errors when using multiple hosts, send to instances
                  */
                 return $this->redirect('/instances');
+            } else {
+                Log::warning('Authentication failure host={host} user={user}', [
+                    'host' => $this->request->ip(),
+                    'user' => $this->request->data('email')
+                ]);
             }
             $this->Flash->error(__('Incorrect username or password.'));
         }
