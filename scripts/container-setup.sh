@@ -30,7 +30,7 @@ okStatus()
 }
 
 if [ "$EUID" -ne 0 ]; then
-  abort "You must this as root or with sudo privledges."
+  abort "You must run this script as root or with sudo privledges."
 fi
 
 
