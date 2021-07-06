@@ -55,7 +55,7 @@ class LxdPreMigrate extends ApplicationService
         } catch (Exception $exception) {
             return new Result([
                 'error' => [
-                    'message' => 'Error connecting to host',
+                    'message' => __('Error connecting to host'),
                     'code' => $exception->getCode(),
                     'error' => $exception->getMessage()
                 ]
@@ -68,7 +68,7 @@ class LxdPreMigrate extends ApplicationService
         if ($this->hasVolumes($instance)) {
             return new Result([
                 'error' => [
-                    'message' => 'Cannot migrate an instance with volumes attached',
+                    'message' => __('Cannot migrate an instance with volumes attached'),
                     'code' => 400
                 ]
             ]);
@@ -77,7 +77,7 @@ class LxdPreMigrate extends ApplicationService
         if (! $this->versionCompatability($remoteHostInfo)) {
             return new Result([
                 'error' => [
-                    'message' => 'Remote server is using an older version of LXD',
+                    'message' => ('Remote server is using an older version of LXD'),
                     'code' => 400
                 ]
             ]);
@@ -86,7 +86,7 @@ class LxdPreMigrate extends ApplicationService
         if (in_array($instance, $remoteInstances)) {
             return new Result([
                 'error' => [
-                    'message' => 'An instance already exists on the remote host with this name',
+                    'message' => ('An instance already exists on the remote host with this name'),
                     'code' => 400
                 ]
             ]);
