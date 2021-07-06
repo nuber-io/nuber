@@ -18,7 +18,6 @@ use App\Lxd\LxdClient;
 use Origin\Service\Result;
 use Origin\Service\Service;
 use Origin\Collection\Collection;
-use Origin\Lock\Lock;
 
 /**
  * @method Result dispatch(string $instance, string $frequency, int $retain)
@@ -37,21 +36,6 @@ class LxdCreateSnapshotBackup extends Service
     protected function execute(string $instance, string $frequency, int $retain) : Result
     {
         $backupName = $this->backupName($frequency) .'-' . time();
-
-        $lock = new Lock($backupName);
-
-        /**
-         * Sqlite lock for update not working as expected, multiple processes fired at the exact time
-         * create duplicates. This code is here to prevent that.
-         */
-        if(!$lock->acquire()){
-            return new Result([
-                'error' => [
-                    'message' => __('Error getting lock'),
-                    'code' => 500
-                ]
-            ]);
-        }
 
         try {
             $this->createBackup($instance, $backupName);
