@@ -24,3 +24,4 @@ coverage/
 
 updater.lock
 auth.json
+DevCommand.php
