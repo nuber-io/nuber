@@ -25,3 +25,4 @@ coverage/
 updater.lock
 auth.json
 DevCommand.php
+images.json
