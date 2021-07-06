@@ -38,6 +38,11 @@ class ForwardTrafficForm extends Record
             'length' => 5
         ]);
 
+        $this->addField('protocol', [
+            'type' => 'string',
+            'length' => 5
+        ]);
+
         $validationRules = [
             'required',
             'integer' => [
@@ -54,6 +59,13 @@ class ForwardTrafficForm extends Record
 
         $this->validate('listen', $validationRules);
         $this->validate('connect', $validationRules);
+        $this->validate('protocol', [
+            'required',
+            'in' => [
+                'rule' => ['in',['tcp','udp']],
+                'message' => __('Invalid Protocol')
+            ]
+        ]);
     }
 
     public function checkPortsInUse(array $devices)

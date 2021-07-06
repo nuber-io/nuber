@@ -308,10 +308,11 @@ class InstancesControllerTest extends NuberTestCase
         $this->login();
         $this->post('/instances/ports/c5', [
             'listen' => '1234',
-            'connect' => '5678'
+            'connect' => '5678',
+            'protocol' => 'tcp'
         ]);
         $this->assertRedirect('/instances/ports/c5');
-        $this->assertFlashMessage('Traffic from port 1234 will be forwarded to port 5678.');
+        $this->assertFlashMessage('TCP traffic from port 1234 will be forwarded to port 5678.');
     }
 
     public function testPortsPostError()
@@ -319,7 +320,8 @@ class InstancesControllerTest extends NuberTestCase
         $this->login();
         $this->post('/instances/ports/c5', [
             'listen' => '1234',
-            'connect' => '5678'
+            'connect' => '5678',
+            'protocol' => 'tcp'
         ]);
         $this->assertResponseOk();
         $this->assertResponseContains('Port is already configured');

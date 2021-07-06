@@ -34,7 +34,8 @@ $statusMap = [
     }
 
     #listen,
-    #connect {
+    #connect,
+    #protocol {
         max-width: 100px;
     }
     .form-control {

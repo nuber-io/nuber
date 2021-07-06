@@ -1,10 +1,5 @@
 
 <?= $this->renderShared('instance-header') ?>
-<style >
-    #memory,#disk,#cpu {
-        max-width:100px;
-    }
-</style>
 
 <div class="row">
     <div class="col-2">
@@ -39,6 +34,22 @@
                             'digits' => 'true',
                             'regex' => '^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$',
                             'maxlength' => 5
+                        ]);
+
+                        /**
+                         * TODO: add proxy_protocol=true option, there is also another option bind=instance which is to
+                         * expose service on host to contianer
+                         * @link https://lxd.readthedocs.io/en/latest/instances/#type-proxy
+                         */
+                    ?>
+
+                    <?php
+       
+                        echo $this->Form->control('protocol', [
+                            'label' => __('Protocol'),
+                            'options' => ['tcp' => __('TCP'),'udp' => __('UDP')],
+                            'div' => 'form-group col-sm-3 text',
+                            'required' => true,
                         ]);
 
                         /**
@@ -116,7 +127,11 @@
                             list($protocol, $ip, $connect) = explode(':', $device['connect']); ?>
                             <li id="device-<?= $deviceName ?>" class="list-group-item d-flex justify-content-between align-items-center">
 
-                                <?= __('Forward traffic from port') . ' ' . $listen . ' to ' . $connect ?>
+                                <?= __('Forward {protocol} traffic from port {from} to {to}', [
+                                    'protocol' => strtoupper($protocol),
+                                    'from' => $listen,
+                                    'to' => $connect,
+                                ])  ?>
                                 <a href="#" onclick="deletePort('<?= $meta['name'] . "','" . $deviceName ?>')">
                                     <i class="fas fa-times"></i>
                                 </a>

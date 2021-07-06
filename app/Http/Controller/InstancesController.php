@@ -386,16 +386,16 @@ class InstancesController extends ApplicationController
                 if ($info['type'] === 'virtual-machine' || isset($info['devices']['eth0']['ipv4.address'])) {
                     // uses iptables/nftables requires a static IP address to be set
                     $deviceConfig = [
-                        'connect' => "tcp:0.0.0.0:{$forwardTrafficForm->connect}",
-                        'listen' => "tcp:{$hostIp}:{$forwardTrafficForm->listen}",
+                        'connect' => "{$forwardTrafficForm->protocol}:0.0.0.0:{$forwardTrafficForm->connect}",
+                        'listen' => "{$forwardTrafficForm->protocol}:{$hostIp}:{$forwardTrafficForm->listen}",
                         'type' => 'proxy',
                         'nat' => 'true'
                     ];
                 } elseif ($info['type'] === 'container') {
                     // Uses a seperate process for each proxy device
                     $deviceConfig = [
-                        'connect' => "tcp:127.0.0.1:{$forwardTrafficForm->connect}",
-                        'listen' => "tcp:0.0.0.0:{$forwardTrafficForm->listen}",
+                        'connect' => "{$forwardTrafficForm->protocol}:127.0.0.1:{$forwardTrafficForm->connect}",
+                        'listen' => "{$forwardTrafficForm->protocol}:0.0.0.0:{$forwardTrafficForm->listen}",
                         'type' => 'proxy'
                     ];
                 }
@@ -403,9 +403,10 @@ class InstancesController extends ApplicationController
                 try {
                     $this->lxd->device->add($instance, 'proxy-' . $forwardTrafficForm->connect . $forwardTrafficForm->listen, $deviceConfig);
 
-                    $this->Flash->success(__('Traffic from port {listen} will be forwarded to port {connect}.', [
+                    $this->Flash->success(__('{protocol} traffic from port {listen} will be forwarded to port {connect}.', [
                         'listen' => $forwardTrafficForm->listen,
-                        'connect' => $forwardTrafficForm->connect
+                        'connect' => $forwardTrafficForm->connect,
+                        'protocol' => strtoupper($forwardTrafficForm->protocol)
                     ]));
 
                     // IMPORTANT: Data needs to be reloaded, I prefer this
@@ -426,7 +427,7 @@ class InstancesController extends ApplicationController
                 $this->Flash->warning(__('The IP address for this instance does not match the configured IP, the proxy configuration might not be working.'));
             }
         }
-    
+
         $this->set(compact('forwardTrafficForm'));
     }
 
