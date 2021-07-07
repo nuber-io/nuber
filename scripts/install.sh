@@ -72,7 +72,6 @@ echo "In your browser open https://$ip:$port/install"
 # TODO: move to host-setup.sh
 echo
 echo 
-read -p "Do you want to setup ZFS (y/n) [y]" answer
 read -p "Do you want to install the ZFS kernel module and ZFS utils package (y/n) [y]" answer
 answer=${answer:-y}
 echo # blank line
