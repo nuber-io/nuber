@@ -23,13 +23,15 @@ class UsersController extends ApplicationController
     {
         // set a custom header to identify login screens for ajax stuff
         $this->response->header('X-Action', 'login');
-
+        if (! debugEnabled()) {
+            $this->response->header('Content-Security-Policy', "default-src 'self'");
+        }
+  
         $this->set('title', __('nuber login'));
         $this->layout = 'form';
         
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
-
             if ($user) {
                 $this->Auth->login($user);
                 /**
