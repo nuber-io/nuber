@@ -28,6 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Setup host no longer sets up private IPv6 networking
+- Changed self signed cert generation to 10 years
+- Changed password validation rules
+
+## Security
+
+- Added user authentication failure logging
+- Added Content-Security-Policy to login page and moved inline styles and scripts to seperate files
+- Added validation checks prior to login
 
 ## [0.3.0] - 2021-06-16
 
