@@ -25,4 +25,5 @@ coverage/
 updater.lock
 auth.json
 DevCommand.php
-images.json
+config/images.json
+config/install.json
