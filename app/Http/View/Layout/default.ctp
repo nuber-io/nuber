@@ -105,12 +105,7 @@ use Origin\Core\Config;
   </main>
 
   <?= $this->renderShared('debug-bar') ?>
-  <!--div id="dialog"></div-->
-<script>
-  $( document ).ready(function() {
-      console.log( "ready!" );
-  });
-</script>
+
 <!-- Does not work with bundles, probably because of path -->
 <link rel="stylesheet" href="/fontawesome/css/all.css">
 <link rel="stylesheet" href="/font-logos/assets/font-logos.css">

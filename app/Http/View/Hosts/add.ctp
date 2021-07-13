@@ -15,8 +15,7 @@
 ?>
 <div class="header">
     <h2><?= __('Add Host') ?></h2>
-    <hr>
-    </hr>
+    <hr></hr>
 </div>
 <div class="host form">
 

@@ -14,13 +14,7 @@
 use App\Lxd\Lxd;
 
 ?>
-<style>
 
-.fa-exclamation-triangle 
-{
-  color:red;
-}
-</style>
 <div class="header">
     <div class="float-right">
         <a href="/debug/download" class="btn btn-primary"><?= __('Download Log') ?></a>

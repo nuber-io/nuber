@@ -18,8 +18,7 @@
 </style>
 <div class="header">
     <h2><?= __('Create from Instance') ?></h2>
-    <hr>
-    </hr>
+    <hr></hr>
 </div>
 <p><?= __('Create an image using an existing instance.') ?></p>
 
@@ -64,5 +63,4 @@
         }
     });
 });
-
 </script>
