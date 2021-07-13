@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace App\Http\Controller;
 
 use Origin\Log\Log;
+use App\Form\LoginForm;
 
 /**
  * @property \App\Model\User $User
@@ -21,31 +22,42 @@ class UsersController extends ApplicationController
 {
     public function login()
     {
+        $this->set('title', __('nuber login'));
+        $this->layout = 'form';
+
         // set a custom header to identify login screens for ajax stuff
         $this->response->header('X-Action', 'login');
         if (! debugEnabled()) {
             $this->response->header('Content-Security-Policy', "default-src 'self'");
         }
   
-        $this->set('title', __('nuber login'));
-        $this->layout = 'form';
+        $loginForm = LoginForm::new();
         
         if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->login($user);
-                /**
-                 * To prevent not found errors when using multiple hosts, send to instances
-                 */
-                return $this->redirect('/instances');
+            $loginForm = LoginForm::patch($loginForm, $this->request->data(), [
+                'fields' => [
+                    'email','password'
+                ]
+            ]);
+            if ($loginForm->validates()) {
+                $user = $this->Auth->identify();
+                if ($user) {
+                    $this->Auth->login($user);
+                    // To prevent not found errors when using multiple hosts, send to instances
+                    return $this->redirect('/instances');
+                } else {
+                    Log::warning('Authentication failure host={host} user={user}', [
+                        'host' => $this->request->ip(),
+                        'user' => $this->request->data('email')
+                    ]);
+                }
+                $this->Flash->error(__('Incorrect username or password.'));
             } else {
-                Log::warning('Authentication failure host={host} user={user}', [
-                    'host' => $this->request->ip(),
-                    'user' => $this->request->data('email')
-                ]);
+                $this->Flash->error(__('Please check the form for errors.'));
             }
-            $this->Flash->error(__('Incorrect username or password.'));
         }
+
+        $this->set(compact('loginForm'));
     }
 
     public function change_password()

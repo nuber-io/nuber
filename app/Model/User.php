@@ -20,18 +20,25 @@ use Origin\Model\Concern\Timestampable;
 
 class User extends ApplicationModel
 {
-    use Delocalizable,Timestampable;
+    use Delocalizable;
+    use Timestampable;
 
     public function initialize(array $config): void
     {
         parent::initialize($config);
 
         $this->validate('first_name', [
-            'required'
+            'required' => [
+                'rule' => 'required',
+                'on' => 'create'
+            ]
         ]);
 
         $this->validate('last_name', [
-            'required'
+            'required' => [
+                'rule' => 'required',
+                'on' => 'create'
+            ]
         ]);
 
         $this->validate('email', [
@@ -43,19 +50,43 @@ class User extends ApplicationModel
             [
                 'rule' => 'isUnique',
                 'message' => __('Email address already in use')
+            ],
+            [
+                'rule' => ['minLength', 3],
+                'message' => __('Minimum length 3 characters')
+            ],
+            [
+                'rule' => ['maxLength',255],
+                'message' => __('Maximum number of 255 characters')
             ]
         ]);
 
         $this->validate('password', [
             'required',
             [
+                'rule' => '/[0-9]/',
+                'message' => __('Must contain at least one digit')
+            ],
+            [
+                'rule' => '/[a-z]/',
+                'message' => __('Must contain at least one lowercase letter')
+            ],
+            [
+                'rule' => '/[A-Z]/',
+                'message' => __('Must contain at least one uppercase letter')
+            ],
+            [
                 'rule' => 'confirm',
                 'message' => __('Passwords do not match'),
                 'on' => 'create'
             ],
             [
-                'rule' => ['minLength', 6],
-                'message' => __('Minimum length 6 characters')
+                'rule' => ['minLength', 8],
+                'message' => __('Minimum length 8 characters')
+            ],
+            [
+                'rule' => ['maxLength',32],
+                'message' => __('Maximum number of 32 characters')
             ]
         ]);
     

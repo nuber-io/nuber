@@ -13,6 +13,7 @@
  * @var \App\Http\View\ApplicationView $this
  */
 use Origin\Core\Config;
+use Origin\Security\Security;
 
 echo $this->Html->css('form');
 ?>
@@ -26,7 +27,18 @@ echo $this->Html->css('form');
     echo $this->Form->control('first_name');
     echo $this->Form->control('last_name');
     echo $this->Form->control('email');
-    echo $this->Form->control('password');
+    echo $this->Form->control('password', [
+        'after' => $this->Html->tag(
+            'small',
+            __('Randomly generated password ideas:') .
+         '<br>' .
+            implode('<br>', [
+                Security::hex(15),
+                Security::base58(15),
+                Security::base62(15),
+            ])
+        )
+    ]);
     echo $this->Form->control('password_confirm', ['type' => 'password']);
     echo $this->Form->button(__('Create User'), ['type' => 'submit', 'class' => 'btn btn-success btn-lg']);
     echo $this->Form->end();
