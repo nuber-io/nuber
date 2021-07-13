@@ -17,7 +17,8 @@
     "originphp/http-client": "^3.1",
     "originphp/log": "^2.0",
     "originphp/storage": "^3.0",
-    "originphp/text": "^2.0"
+    "originphp/text": "^2.0",
+    "originphp/value-store": "^1.0"
   },
   "require-dev": {
     "originphp/debug-plugin": "^2.0",

@@ -14,6 +14,7 @@ namespace App\Http\Controller;
 
 use Origin\Text\Text;
 use Origin\Security\Security;
+use Origin\ValueStore\ValueStore;
 use Origin\Http\Exception\NotFoundException;
 
 /**
@@ -39,8 +40,10 @@ class InstallController extends ApplicationController
 
     public function user()
     {
-        // disable signup once a user has been setup
-        if ($this->User->count() > 0) {
+        $settings = new ValueStore(config_path('install.json'));
+
+        // Backward compatability DB user count until a patch can be added
+        if ($settings->user || $this->User->count() > 0) {
             throw new NotFoundException('Not Found');
         }
 
@@ -50,6 +53,11 @@ class InstallController extends ApplicationController
             $user = $this->User->new($this->request->data());
 
             if ($this->User->save($user)) {
+
+                # write to config/install.php
+                $settings->user = true;
+                $settings->save();
+
                 $this->Flash->success(__('You have been added as a user'));
 
                 return $this->redirect('/install/host');
@@ -62,9 +70,12 @@ class InstallController extends ApplicationController
 
     public function host()
     {
+        $settings = new ValueStore(config_path('install.json'));
+
         $host = $this->Host->new();
 
-        if ($this->Host->count() > 0) {
+        // Backward compatability DB host count until a patch can be added
+        if ($settings->host || $this->Host->count() > 0) {
             throw new NotFoundException('Not Found');
         }
         $host->password = Security::uuid();
@@ -74,7 +85,9 @@ class InstallController extends ApplicationController
             $host->is_default = true;
 
             if ($this->Host->save($host)) {
-
+                $settings->host = true;
+                $settings->save();
+               
                 # Adjust the .env file to use the LXD host address
                 /* file_put_contents(
                      CONFIG . '/.env',
