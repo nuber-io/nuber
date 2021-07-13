@@ -51,7 +51,7 @@ okStatus 'Apache, PHP & NPM installed'
 
 # Create SERVER Certificates
 mkdir /etc/apache2/ssl
-openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout /etc/apache2/ssl/privateKey -out /etc/apache2/ssl/certificate -subj "/CN=localhost"  -extensions EXT -config <( \
+openssl req -x509 -sha256 -nodes -newkey rsa:4096 -days 3650 -keyout /etc/apache2/ssl/privateKey -out /etc/apache2/ssl/certificate -subj "/CN=localhost"  -extensions EXT -config <( \
    printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 
 # Enable Modules proxy etc are needed if only using rewrite
