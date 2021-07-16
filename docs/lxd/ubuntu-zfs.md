@@ -59,7 +59,7 @@ If this server is accesible on the internet then you should secure it with [SSH 
 Install the `zfs` utilities
 
 ```bash
-$ sudo apt install zfsutils-linux
+$ sudo apt install zfsutils-linux -y
 ```
 
 ## Configuring the ZFS storage pool
@@ -111,7 +111,7 @@ The `sda1` is the BIOS partition, and `sda2` is the `root` partition which is mo
 Run the following command , changing the `sdaX` to the **unmounted** partition that you want to use, e.g. `sda3`.
 
 ```bash
-$ sudo zpool create lxdpool /dev/sdaX
+$ sudo zpool create lxd /dev/sdaX
 ```
 
 You can check that it was created okay
@@ -119,14 +119,14 @@ You can check that it was created okay
 ```bash
 $ sudo zpool list
 NAME      SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
-lxdpool  50G   110K  50G        -         -     0%     0%  1.00x    ONLINE  -
+lxd  50G   110K  50G        -         -     0%     0%  1.00x    ONLINE  -
 ```
 
 ## Configuring LXD
 
 > The default storage pool should be called `default`, do not change this name
 
-So that you can use `LXD` you need to initialize it, you can accept all the defaults except for when it prompts you `Create a new ZFS pool?`, when it does select **no** and then enter `lxdpool` or the name that you used when creating the `ZFS` pool earlier.
+So that you can use `LXD` you need to initialize it, you can accept all the defaults except for when it prompts you `Create a new ZFS pool?`, when it does select **no** and then enter `lxd` or the name that you used when creating the `ZFS` pool earlier.
 
 ```bash
 $ sudo lxd init
@@ -135,7 +135,7 @@ Do you want to configure a new storage pool? (yes/no) [default=yes]:
 Name of the new storage pool [default=default]:
 Name of the storage backend to use (lvm, zfs, ceph, btrfs, dir) [default=zfs]:
 Create a new ZFS pool? (yes/no) [default=yes]: no
-Name of the existing ZFS pool or dataset: lxdpool
+Name of the existing ZFS pool or dataset: lxd
 Would you like to connect to a MAAS server? (yes/no) [default=no]:
 Would you like to create a new local network bridge? (yes/no) [default=yes]:
 What should the new bridge be called? [default=lxdbr0]:

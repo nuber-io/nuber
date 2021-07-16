@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added user authentication failure logging
 - Added Content-Security-Policy to login page and moved inline styles and scripts to seperate files
 - Added validation checks prior to login
+- Added message to install script for user to add IP tables rule for web interface
 
 ## [0.3.0] - 2021-06-16
 

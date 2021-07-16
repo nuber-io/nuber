@@ -23,7 +23,9 @@ Create the database and tables, also setup the database for testing.
 
 ```bash
 $ bin/console db:setup
+$ bin/console db:migrate
 $ bin/console db:test:prepare
+$ chown -R www-data:www-data data
 ```
 
 Build the container
@@ -31,6 +33,10 @@ Build the container
 ```bash
 $ docker-compose build
 ```
+
+````
+
+``
 
 ## Usage
 
@@ -40,7 +46,7 @@ To start the container
 
 ```bash
 $ docker-compose up
-```
+````
 
 Check this works fine
 [https://localhost:3000](https://localhost:3000)
@@ -68,8 +74,8 @@ Follow the instructions, and on the next page enter the IP address and following
 To setup the LXD host
 
 ```bash
-lxc config set core.https_address "[::]:8443"
-lxc config set core.trust_password "00000000-0000-0000-0000-000000000000"
+$ lxc config set core.https_address "[::]:8443"
+$ lxc config set core.trust_password "00000000-0000-0000-0000-000000000000"
 ```
 
 To see instance logs
