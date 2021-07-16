@@ -62,16 +62,26 @@ function askPort
     fi
 }
 
+
+ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'); # $(curl ipinfo.io/ip)
+
 askPort port
 lxc config device add nuber-app proxy-"$port"443 proxy listen=tcp:0.0.0.0:"$port" connect=tcp:127.0.0.1:443
+echo 
+echo "It is highly recommened that you only allow the web interface to be accessed from trusted IP addresses."
+echo "Use the following command, replacing x.x.x.x with the public IP address of your home or work internet connection."
+echo "If your IP address changes then you will need to delete the existing rule first."
+echo 
+echo "> sudo iptables -I INPUT -p tcp ! -s x.x.x.x --dport $port -j REJECT"
+
+# IP_ADDRESS=$(curl ipinfo.io/ip)
 
 echo
-ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}');
+
 echo "In your browser open https://$ip:$port/install"
 
 # TODO: move to host-setup.sh
 echo
-echo 
 read -p "Do you want to install the ZFS kernel module and ZFS utils package (y/n) [y]" answer
 answer=${answer:-y}
 echo # blank line
@@ -82,9 +92,8 @@ then
     sudo sh -c "echo 'zfs' >> /etc/modules"
 fi
 
-echo
 echo 
-read -p "Do you want to setup a bridged network connection? (y/n) [n]" -n 1 -r
+read -p "(experimental) Do you want to setup a bridged network connection? (y/n) [n]" -n 1 -r
 echo # blank line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
@@ -100,7 +109,7 @@ then
     exit 1
 fi
 
-read -p "Setup bridged network using '$interface' interface? (y/n) [n]" -n 1 -r
+read -p "Setup the bridged network connection using '$interface' interface? (y/n) [n]" -n 1 -r
 echo # blank line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
