@@ -16,6 +16,7 @@ use Origin\Http\Middleware\IdsMiddleware;
 use Origin\Http\Middleware\MinifyMiddleware;
 use Origin\Http\Middleware\SessionMiddleware;
 use Origin\Http\Middleware\CsrfProtectionMiddleware;
+use Origin\Http\Middleware\MaintenanceModeMiddleware;
 
 class Application extends BaseApplication
 {
@@ -36,5 +37,6 @@ class Application extends BaseApplication
         $this->addMiddleware(new CsrfProtectionMiddleware(self::CSRF_OPTIONS));
         $this->addMiddleware(new MinifyMiddleware(self::MINIFY_OPTIONS));
         $this->addMiddleware(new IdsMiddleware);
+        $this->addMiddleware(new MaintenanceModeMiddleware);
     }
 }
