@@ -29,6 +29,10 @@
 
     <?= $this->renderShared('debug-bar') ?>
     
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <?= $this->renderShared('debug-bar') ?>
+
     <script src="/js/application.js"></script>
     <script src="/js/login.js"></script>
   </body>
