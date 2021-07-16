@@ -20,7 +20,7 @@ class UserTest extends OriginTestCase
         $user = $this->User->find('first');
 
         $before = $user->password;
-        $user->password = 'xxxxxxx';
+        $user->password = 'Ab123456';
 
         $this->assertTrue($this->User->save($user));
         $this->assertNotEquals($before, $user->password);

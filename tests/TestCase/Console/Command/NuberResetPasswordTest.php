@@ -14,7 +14,14 @@ class NuberResetPasswordTest extends OriginTestCase
 
     public function testChangePassword()
     {
-        $this->exec('nuber:reset-password', ['james@nuber.io','secret']);
+        $this->exec('nuber:reset-password', ['james@nuber.io','Secret123456']);
+        $this->assertExitSuccess();
+        $this->assertOutputContains('Password has been changed');
+    }
+
+    public function testChangePasswordAfterError()
+    {
+        $this->exec('nuber:reset-password', ['james@nuber.io','secret','Secret123456']);
         $this->assertExitSuccess();
         $this->assertOutputContains('Password has been changed');
     }

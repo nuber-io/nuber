@@ -28,7 +28,7 @@ class UsersControllerTest extends NuberTestCase
     {
         $this->post('/login', [
             'email' => 'james@nuber.io',
-            'password' => 123456
+            'password' => 'Secret123456'
         ]);
         $this->assertRedirect(); // depends on config
     }
@@ -45,9 +45,9 @@ class UsersControllerTest extends NuberTestCase
     {
         $this->login();
         $this->post('/change-password', [
-            'current_password' => '123456',
-            'password' => '1234567',
-            'password_confirm' => '1234567'
+            'current_password' => 'Secret123456',
+            'password' => 'Secret78',
+            'password_confirm' => 'Secret78'
         ]);
  
         $this->assertRedirect('/change-password');
@@ -60,7 +60,7 @@ class UsersControllerTest extends NuberTestCase
         $this->login();
 
         $this->post('/change-password', [
-            'current_password' => 'secret',
+            'current_password' => 'Secret123456',
             'password' => '1234567',
             'password_confirm' => '1234567'
         ]);

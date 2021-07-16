@@ -14,6 +14,7 @@ namespace App\Console\Command;
 
 namespace App\Console\Command;
 
+use Origin\Model\Entity;
 use Origin\Console\Command\Command;
 
 class NuberResetPasswordCommand extends Command
@@ -44,12 +45,25 @@ class NuberResetPasswordCommand extends Command
         ]);
 
         if ($user) {
-            $user->password = $this->io->ask('What password would you like to change to');
-         
-            $this->User->saveOrFail($user, ['validate' => false]);
-            $this->io->info('Password has been changed');
+            $this->promptForPassword($user);
+            $this->io->success('Password has been changed');
         } else {
             $this->io->error('User does not exist');
+        }
+    }
+
+    private function promptForPassword(Entity $user) : void
+    {
+        $user->password = $this->io->askSecret('What password would you like to change to');
+         
+        if (! $this->User->save($user)) {
+            $this->io->error('Error saving password');
+            foreach ($user->errors('password') as $error) {
+                $this->warning('- ' . $error);
+            }
+            $this->io->nl();
+            $user->reset();
+            $this->promptForPassword($user);
         }
     }
 }
