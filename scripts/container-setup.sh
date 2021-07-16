@@ -135,4 +135,7 @@ then
   vendor/bin/updater init --version ${VERSION}
 fi
 
+# download image list
+bin/console image:list
+
 okStatus 'Nuber installed';
