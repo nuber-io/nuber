@@ -759,10 +759,7 @@ class InstancesController extends ApplicationController
         // This is actually faster getting instance info and state each time
         try {
             $info = $this->lxd->instance->list();
-            /**
-             * Virtual machines are not supported at this time, prevent users from getting round this
-             * as it may cause some unexpected results or errors when resizing or trying to attach a volume etc.
-             */
+    
             $info = collection($info)->filter(function ($instance) use ($name) {
                 return $instance['name'] === $name;
             });
@@ -875,9 +872,8 @@ class InstancesController extends ApplicationController
      * available, so it needs to be downloaded and the data needs to be adjusted
      * to include the fingerprint.
      *
-     * @param string $instance
      */
-    public function download(string $instance)
+    public function download()
     {
         $this->request->header('Accept', 'application/json');
         $this->request->allowMethod('post');
