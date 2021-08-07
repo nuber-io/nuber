@@ -120,4 +120,11 @@ class ApplicationController extends Controller
 
         return $this->renderJson($error, $error['error']['code']);
     }
+
+    protected function supportsVMs() : bool
+    {
+        $host = $this->lxd->host->info();
+
+        return (bool) preg_match('/qemu/i', $host['environment']['driver']);
+    }
 }

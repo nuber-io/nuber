@@ -45,12 +45,12 @@
                     'virtual-machine' => __('Virtual Machine')
 
                 ],
-                'disabled' => $this->request->query('store')
+                'disabled' => ! $supportsVMs || $this->request->query('store')
             ],
         );
 
-        if ($this->request->query('store')) {
-            echo $this->Form->hidden('type', ['value' => $this->request->query('type')]);
+        if (! $supportsVMs || $this->request->query('store')) {
+            echo $this->Form->hidden('type', ['value' => $this->request->query('type') ?: 'container']);
         }
 
         ?>        

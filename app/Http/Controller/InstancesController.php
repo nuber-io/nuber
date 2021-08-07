@@ -864,6 +864,7 @@ class InstancesController extends ApplicationController
 
         $networks = $this->getNetworkList();
         $this->set(compact('instanceForm', 'networks'));
+        $this->set('supportsVMs', $this->supportsVMs());
     }
 
     /**
