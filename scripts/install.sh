@@ -25,16 +25,12 @@ fi
 
 
 # Create the container
-image='images:ubuntu/focal/amd64'
-if arch | grep 'aarch64' ; then
-  image='images:ubuntu/focal/arm64'
-fi
-if  ! lxc launch $image nuber-app ; then
+if  ! lxc launch ubuntu:20.04 nuber-app ; then
     echo "Error creating instance"
     exit 1
 fi
 
-
+# Download the container installation script (run inside the container)
 curl https://www.nuber.io/container-setup.sh --output container-setup.sh
 if [ ! -f ./container-setup.sh ]; then
     exit 1
@@ -62,7 +58,6 @@ function askPort
     fi
 }
 
-
 ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'); # $(curl ipinfo.io/ip)
 
 askPort port
@@ -74,67 +69,5 @@ echo "If your IP address changes then you will need to delete the existing rule 
 echo 
 echo "> sudo iptables -I INPUT -p tcp ! -s x.x.x.x --dport $port -j REJECT"
 
-# IP_ADDRESS=$(curl ipinfo.io/ip)
-
 echo
-
 echo "In your browser open https://$ip:$port/install"
-
-# TODO: move to host-setup.sh
-echo
-read -p "Do you want to install the ZFS kernel module and ZFS utils package (y/n) [y]" answer
-answer=${answer:-y}
-echo # blank line
-if [[ $answer =~ ^[Yy]$ ]]
-then
-    sudo apt install -y zfsutils-linux
-    sudo modprobe zfs
-    sudo sh -c "echo 'zfs' >> /etc/modules"
-fi
-
-echo 
-read -p "(experimental) Do you want to setup a bridged network connection? (y/n) [n]" -n 1 -r
-echo # blank line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    exit
-fi
-
-sudo apt install -y bridge-utils network-manager
-
-interface=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
-if [ -z "$interface" ] 
-then 
-    echo  "Error: Unable to get network interface"
-    exit 1
-fi
-
-read -p "Setup the bridged network connection using '$interface' interface? (y/n) [n]" -n 1 -r
-echo # blank line
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    sudo nmcli con add ifname nuber-bridged type bridge con-name nuber-bridged
-    sudo nmcli con add type bridge-slave ifname "$interface" master nuber-bridged
-fi
-
-echo "Starting the Bridge Network (experimental)"
-echo "=========================================="
-echo 
-echo "You will need to start the bridged network manually, this involves stopping the existing"
-echo "connection, and then starting the bridge connection."
-echo 
-echo "The bridged network is configured as DHCP, so if you have a static IP address configured"
-echo "in your hosts network settings, this will be ignored. "
-echo 
-
-# You need to start the bridge network like this, setting the connection name
-# $ sudo nmcli con down <name of internet connection>; wait ; sudo nmcli con up nuber-bridged
-
-connection=$(sudo nmcli device | grep "$interface" | awk -- '{printf $1}')
-if [ -z "$connection" ] 
-then 
-    echo  "Error: Unable to detect network connection interface"
-    exit 1
-fi
-
-echo "$ sudo nmcli con down $connection; wait ; sudo nmcli con up nuber-bridged"
