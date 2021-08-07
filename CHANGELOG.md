@@ -14,6 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
+## [0.4.1] - 2021-08-07
+
+### Security
+
+- Changed setup instructions to advise to setup LXD to listen on local IP to prevent LXD API available remotely by default
+
+### Removed
+
+- Removed ZFS setup from install script
+- Removed bridge setup from install script
+
+### Added
+
+- Added disabling of virtual machine radio button when KVM not available (requires LXD 4.0.7+ from stable)
+
 ## [0.4.0] - 2021-07-16
 
 ### Added
