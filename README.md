@@ -22,20 +22,29 @@ The recommended storage pool driver is `ZFS`, see [server setup using ZFS storag
 
 Once you have setup your server and `LXD` has been initiailzed you can run the following command to install Nuber.
 
-> Nuber is best installed on a freshly installed system (without existing containers), and it assumes the storage pool configured in LXD is called `default`
 > Nuber is best installed on a freshly installed system, and it assumes the storage pool configured in LXD is called `default`. Only networks created by Nuber will be visible in the web application, so if you are installing this on an existing server with containers then you will need to set the network description to `Nuber virtual network` to become visible in the network list.
 
 ```bash
 $ bash <(curl -s https://www.nuber.io/install.sh)
 ```
 
-There is an option to create a bridged network connection, if you dont need this or you are installing in a virtual machine, then select `n`.
+### Securing access to the panel
 
-```bash
-Do you want to setup a bridged network connection? (y/n) [n]
+It is highly recommened that you only allow the web interface to be accessed from trusted IP addresses.
+
+First find out what your IP address is, from your client machine run the following command:
+
+```
+$ curl ipinfo.io/ip
 ```
 
-Once the installation is complete, you can go to `https://<ip_address>:3000/install` to setup your installation.
+Then on your server create the following firewall rule which will reject traffic to the selected port when not coming from a trusted IP address.
+
+Replace `<IP_ADDRESS>` with your IP address and `<PORT_NUMBER>` with the port number that you chose when installing nuber.
+
+```bash
+$ sudo iptables -I INPUT -p tcp ! -s <IP_ADDRESS> --dport <PORT_NUMBER> -j REJECT
+```
 
 ## Uninstall Nuber
 

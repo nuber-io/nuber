@@ -34,13 +34,17 @@
       </div>
       <div class="modal-body">
 
-        <p class="mb-2"><?= __('To enable remote access you will need to set the LXD host to listen on port 8843, SSH into the LXD host and run the following command.') ?> </p>
+        <p class="mb-2"><?= __('To enable remote access you will need to set the LXD host to listen on port 8843, SSH into the LXD host and run the following command, setting the server local IP address. ') ?> </p>
 
           <div class="command">
-            <p>$ lxc config set core.https_address "[::]:8443"</p>
+            <p>$ lxc config set core.https_address 192.168.1.x</p>
           </div>
 
 
+        <p class="mt-2 mb-2"><?= __('If you want the LXD API to be available remotely then you can run the following command instead.') ?> </p>
+        <div class="command">
+            <p>$ lxc config set core.https_address "[::]:8443"</p>
+          </div>
 
         <p class="mt-2 mb-2"><?= __('So that Nuber can communicate with the LXD host, a TLS certificate is used, during the install process a certificate was generated. So that nuber can upload the certificate to the LXD host you will need to set a password.') ?><p>
 
