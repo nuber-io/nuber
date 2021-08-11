@@ -18,7 +18,7 @@ You will need a server or a virtual machine with Linux installed, it is recommen
 
 Its recommended to have a separate partition for the LXD storage pool, so do this during the install, create two partitions, one for the operating system, at least 25GB for `/` and leave the remaining space for the storage pool partition.
 
-The recommended storage pool driver is `ZFS`, see [server setup using ZFS storage driver](docs/lxd/ubuntu-zfs.md) for more information on how to set this up.
+The recommended storage pool driver is `ZFS`, see the [install guide](docs/lxd/install) on how to install Ubuntu, setup ZFS and install LXD.
 
 Once you have setup your server and `LXD` has been initiailzed you can run the following command to install Nuber.
 
@@ -30,47 +30,9 @@ $ bash <(curl -s https://www.nuber.io/install.sh)
 
 ### Securing the server
 
-It is highly recommened that you only allow the web interface to be accessed from trusted IP addresses.
+It is important to secure the server, this includes restricting access to the Nuber control panel so that only people from trusted IP addresses can access it, as well as setting up a firewall.
 
-You should also block all external traffic coming into the server, except the SSH port. When you add port forwarding to a container or virtual machine in Nuber, LXD will automatically create the rules.
-
-#### Setting up IP Tables (firewall)
-
-In the following example it assumes:
-
-1. Your network device is called `eth0`, use `ip a` to find out what it is
-2. Your home or work IP address is `123.123.123.123`, you can run `curl ipinfo.io/ip` to get your public IP address
-3. Nuber was installed on port `3000`, change it if you used something else
-4. Your SSH is configured on port 22
-
-Replace the values with yours, and run the following, all changes will be persisted when you restart the server as well.
-
-```bash
-$ sudo iptables -A INPUT -i eth0 -p tcp --dport 3000 -s 123.123.123.123 -j ACCEPT
-$ sudo iptables -A INPUT -i eth0-p tcp --dport 22 -j ACCEPT
-$ sudo iptables -A INPUT -i eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-$ sudo iptables -A INPUT -i eth0 -j REJECT
-$ sudo iptables-save
-```
-
-Check that you can still SSH in and things are working.
-
-#### Persist on boot
-
-The rules need be restored each time the server boots, install the following packages
-
-```bash
-$ sudo apt-get install iptables-persistent
-```
-
-Select `yes` when it asks you to save the current rules. Test that you can still login via SSH from another console window, then run `sudo reboot`
-
-You can test the server has been locked down from another server by running the following command and replacing the IP address and port number, it still should work from your browser.
-
-```
-$ curl https://123.123.123.123:3000/login
-curl: (7) Failed to connect to 123.123.123.123 port 3000: Connection refused
-```
+See the [securing the host guide](docs/lxd/securing-the-host) for steps on how to do this.
 
 ## Uninstall Nuber
 
