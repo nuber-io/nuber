@@ -18,7 +18,7 @@ You will need a server or a virtual machine with Linux installed, it is recommen
 
 Its recommended to have a separate partition for the LXD storage pool, so do this during the install, create two partitions, one for the operating system, at least 25GB for `/` and leave the remaining space for the storage pool partition.
 
-The recommended storage pool driver is `ZFS`, see the [install guide](docs/lxd/install.md) on how to install Ubuntu, setup ZFS and install LXD.
+The recommended storage pool driver is `ZFS`, see the [install guide](https://www.nuber.io/docs/lxd/install/) on how to install Ubuntu, setup ZFS and install LXD.
 
 Once you have setup your server and `LXD` has been initiailzed you can run the following command to install Nuber.
 
@@ -32,7 +32,7 @@ $ bash <(curl -s https://www.nuber.io/install.sh)
 
 It is important to secure the server, this includes restricting access to the Nuber control panel so that only people from trusted IP addresses can access it, as well as setting up a firewall.
 
-See the [securing the host guide](docs/lxd/securing-the-host.md) for steps on how to do this.
+See the [securing the host guide](https://www.nuber.io/docs/lxd/securing-the-host/) for steps on how to do this.
 
 ## Uninstall Nuber
 
