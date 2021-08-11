@@ -4,6 +4,7 @@ description: How to create an LXD container
 extends: _layouts.documentation
 section: content
 ---
+
 # Create an Instance
 
 To create a new instance, from the instances home click on the button **new instance**.
@@ -14,6 +15,6 @@ Then you will then be asked which image to use, the selection wizard offers comm
 
 ![alt text](/assets/img/nuber/instance-select-image.png)
 
-Once you have selected an **image**, enter a **name** for the instance and adjust the configuration if needed.
+Once you have selected an **image**, enter a **name** for the instance and adjust the configuration if needed. If your host supports virtualization then you can also create virtual machines using LXD as well, by selecting the virtual machine radio button.
 
 ![alt text](/assets/img/nuber/instance-new.png)

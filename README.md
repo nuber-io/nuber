@@ -28,22 +28,48 @@ Once you have setup your server and `LXD` has been initiailzed you can run the f
 $ bash <(curl -s https://www.nuber.io/install.sh)
 ```
 
-### Securing access to the panel
+### Securing the server
 
 It is highly recommened that you only allow the web interface to be accessed from trusted IP addresses.
 
-First find out what your IP address is, from your client machine run the following command:
+You should also block all external traffic coming into the server, except the SSH port. When you add port forwarding to a container or virtual machine in Nuber, LXD will automatically create the rules.
 
-```
-$ curl ipinfo.io/ip
-```
+#### Setting up IP Tables (firewall)
 
-Then on your server create the following firewall rule which will reject traffic to the selected port when not coming from a trusted IP address.
+In the following example it assumes:
 
-Replace `<IP_ADDRESS>` with your IP address and `<PORT_NUMBER>` with the port number that you chose when installing nuber.
+1. Your network device is called `eth0`, use `ip a` to find out what it is
+2. Your home or work IP address is `123.123.123.123`, you can run `curl ipinfo.io/ip` to get your public IP address
+3. Nuber was installed on port `3000`, change it if you used something else
+4. Your SSH is configured on port 22
+
+Replace the values with yours, and run the following, all changes will be persisted when you restart the server as well.
 
 ```bash
-$ sudo iptables -I INPUT -p tcp ! -s <IP_ADDRESS> --dport <PORT_NUMBER> -j REJECT
+$ sudo iptables -A INPUT -i eth0 -p tcp --dport 3000 -s 123.123.123.123 -j ACCEPT
+$ sudo iptables -A INPUT -i eth0-p tcp --dport 22 -j ACCEPT
+$ sudo iptables -A INPUT -i eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+$ sudo iptables -A INPUT -i eth0 -j REJECT
+$ sudo iptables-save
+```
+
+Check that you can still SSH in and things are working.
+
+#### Persist on boot
+
+The rules need be restored each time the server boots, install the following packages
+
+```bash
+$ sudo apt-get install iptables-persistent
+```
+
+Select `yes` when it asks you to save the current rules. Test that you can still login via SSH from another console window, then run `sudo reboot`
+
+You can test the server has been locked down from another server by running the following command and replacing the IP address and port number, it still should work from your browser.
+
+```
+$ curl https://123.123.123.123:3000/login
+curl: (7) Failed to connect to 123.123.123.123 port 3000: Connection refused
 ```
 
 ## Uninstall Nuber
