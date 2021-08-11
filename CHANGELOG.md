@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
+## [0.4.2] - 2021-08-11
+
+### Security
+
+- Added securing the host and changed instructions on adding host, basically adding a firewall and reverting 0.4.1.
+
 ## [0.4.1] - 2021-08-07
 
 ### Security
