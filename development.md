@@ -34,10 +34,6 @@ Build the container
 $ docker-compose build
 ```
 
-````
-
-``
-
 ## Usage
 
 Once you have built the docker image, you can work with it like this
@@ -46,7 +42,7 @@ To start the container
 
 ```bash
 $ docker-compose up
-````
+```
 
 Check this works fine
 [https://localhost:3000](https://localhost:3000)
