@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
+## [0.4.3] - 2021-04-25
+
+- Fixed images URL which was changed to a different domain
+- Added check due to change in the images.json file where key is missing now on some images
+- Removed security.secureboot setting for containers, since this now triggers an error when creating containers
+
 ## [0.4.2] - 2021-08-11
 
 ### Security
