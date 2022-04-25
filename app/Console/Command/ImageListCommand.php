@@ -20,7 +20,7 @@ class ImageListCommand extends Command
     protected $name = 'image:list';
     protected $description = 'Downloads a full list of the remote images';
 
-    const URL = 'https://uk.images.linuxcontainers.org/streams/v1/images.json';
+    const URL = 'https://uk.lxd.images.canonical.com/streams/v1/images.json';
 
     protected function initialize(): void
     {
@@ -50,9 +50,14 @@ class ImageListCommand extends Command
                 'virtualMachineFingerprint' => null
             ];
 
+         
             ksort($data['versions']);
             $latest = array_key_last($data['versions']);
-            $imageData['containerFingerprint'] = $data['versions'][$latest]['items']['lxd.tar.xz']['combined_squashfs_sha256'];
+           
+            if(isset($data['versions'][$latest]['items']['lxd.tar.xz']['combined_squashfs_sha256'])){
+                $imageData['containerFingerprint'] = $data['versions'][$latest]['items']['lxd.tar.xz']['combined_squashfs_sha256'];
+            }
+            
             if (! empty($data['versions'][$latest]['items']['lxd.tar.xz']['combined_disk-kvm-img_sha256'])) {
                 $imageData['virtualMachineFingerprint'] = $data['versions'][$latest]['items']['lxd.tar.xz']['combined_disk-kvm-img_sha256'];
             }
