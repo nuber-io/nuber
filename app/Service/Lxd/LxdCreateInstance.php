@@ -50,7 +50,6 @@ class LxdCreateInstance extends ApplicationService
             'config' => [
                 'limits.memory' => $memory,
                 'limits.cpu' => (string) $cpu,
-                'security.secureboot' => 'false'  // need for VMs
             ],
             'devices' => [
                 'root' => [
@@ -65,7 +64,7 @@ class LxdCreateInstance extends ApplicationService
         if ($type === 'virtual-machine') {
             $config['security.secureboot'] = 'false';
         }
-
+       
         $uuid = $this->client->instance->create($fingerprint, $name, $config);
 
         $response = $this->client->operation->wait($uuid);
