@@ -127,7 +127,7 @@ class Host extends ApplicationModel
         } elseif ($result->error['code'] === 403) {
             $host->error('password', __('Invalid password'));
         } else {
-            $host->error('address', __('Error {code}', $result->error['code']));
+            $host->error('address', __('Error {code}', ['code' => $result->error['code']]));
         }
     }
 
