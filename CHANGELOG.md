@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
+## [0.4.5] - 2021-05-07
+
+- Fixed unkown error rendering
+
 ## [0.4.4] - 2021-04-26
 
 - Updated distributions list
