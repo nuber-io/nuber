@@ -41,7 +41,8 @@
   "config": {
     "preferred-install": "dist",
     "optimize-autoloader": true,
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": true
   },
   "scripts": {
     "post-create-project-cmd": [
