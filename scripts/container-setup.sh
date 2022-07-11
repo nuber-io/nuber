@@ -39,20 +39,20 @@ if ! apt-get update -y; then
 fi
 
 apt-get upgrade -y
-apt-get install -y curl git nano unzip rsync zip apache2 libapache2-mod-php php php-apcu php-cli php-common php-curl php-intl php-json php-mailparse php-mbstring php-mysql php-opcache php-pear php-readline php-xml php-zip npm sqlite3 php-sqlite3 cron
+
+apt-get install -y curl git nano unzip rsync zip apache2 libapache2-mod-php php php-apcu php-cli php-common php-curl php-intl php-json php-mailparse php-mbstring php-mysql php-opcache php-pear php-readline php-xml php-zip sqlite3 php-sqlite3 cron
 
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 if [ ! -f /usr/local/bin/composer ]; then
     abort 'Unable to download Composer'
 fi
-
-# Upgrade nodejs 
-npm cache clean -f
-npm install -g n
-n 14
-
 okStatus 'Apache, PHP & NPM installed'
+
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+apt-get install -y nodejs
+okStatus 'NodeJS'
+
 
 # Create SERVER Certificates
 mkdir /etc/apache2/ssl
