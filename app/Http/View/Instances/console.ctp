@@ -50,11 +50,17 @@
 
     function initializeTerm(){
 
+        const server2 = new WebSocket('wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $controlPath ?>');
+        server2.onopen = function(event) {
+            console.log('websocket (control) opened: ' +  'wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $controlPath ?>'); 
+
+            server2.onclose = function(event) {
+                console.log('socket2 has been closed', event);
+            };
+        }
+
         // LXD auth uses cert files, so websocket is in backend
         const server = new WebSocket('wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $path ?>');
-        const server2 = new WebSocket('wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $controlPath ?>');
-
-
         server.onopen = function(event) {
             console.log('websocket opened: ' +  'wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $path ?>'); 
 
@@ -71,13 +77,7 @@
             };
         };
 
-        server2.onopen = function(event) {
-            console.log('websocket opened: ' +  'wss://<?= $this->request->host() ?>/?server=<?= $node . ':8443' . $controlPath ?>'); 
-
-            server2.onclose = function(event) {
-                console.log('socket2 has been closed', event);
-            };
-        }
+       
 
       
 
