@@ -341,10 +341,10 @@ class InstancesController extends ApplicationController
                 ]
             ]);
 
-            $this->set(
-                'path',
-                "/1.0/operations/{$response['id']}/websocket?secret={$response['metadata']['fds'][0]}"
-            );
+            $this->set('controlPath',"/1.0/operations/{$response['id']}/websocket?secret={$response['metadata']['fds'][control]}");
+
+          
+            $this->set('path', "/1.0/operations/{$response['id']}/websocket?secret={$response['metadata']['fds'][0]}" );
         }
         
         $this->set('node', Lxd::host());

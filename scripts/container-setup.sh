@@ -47,6 +47,11 @@ if [ ! -f /usr/local/bin/composer ]; then
     abort 'Unable to download Composer'
 fi
 
+# Upgrade nodejs 
+npm cache clean -f
+npm install -g n
+n 14
+
 okStatus 'Apache, PHP & NPM installed'
 
 # Create SERVER Certificates

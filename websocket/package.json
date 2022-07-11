@@ -1,6 +1,7 @@
 {
   "name": "console-server",
   "description": "Handles accessing the LXD server via websockets",
+  "version": "0.1.0",
   "author": "Jamiel Sharief",
   "dependencies": {
     "url": "^0.11.0",
